@@ -32,8 +32,11 @@ describe GCOV::File do
   end
 
   describe ".parse" do
-    it "parses a gcov file" do
-      
+    it "can parse a gcov file" do
+      file = GCOV::File.parse(File.join(File.dirname(__FILE__),"test.cpp.gcov"))
+      expect(file.lines.count).to eq(97)
+      expect(file.meta["Graph"]).to eq("stringutil.cpp.gcno")
+      expect(file.meta["Runs"].to_i).to eq(1)
     end
   end
 end

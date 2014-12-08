@@ -1,0 +1,102 @@
+        -:    0:Source:/Users/mattias/Documents/Work/SwarmPlanet/livelib/splib/core/src/stringutil.cpp
+        -:    0:Graph:stringutil.cpp.gcno
+        -:    0:Data:stringutil.cpp.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include <sp/core/stringutil.h>
+        -:    2:
+        -:    3:namespace sp {
+        -:    4:
+        -:    5:  // static
+        -:    6:  /*
+        -:    7:   * NOTE: return value will either use RVO or move semantics, so
+        -:    8:   * don't worry about excessive copying.
+        -:    9:   */
+        4:   10:  std::string StringUtil::format( const char* fmt, ... )
+        -:   11:  {
+        4:   12:      va_list argp;
+        4:   13:      std::string str = " ";
+        -:   14:
+        -:   15:      // first figure out how many chars we need
+        4:   16:      va_start(argp, fmt);
+       12:   17:      int wrote = vsnprintf(&str[0], 2, fmt, argp);
+        4:   18:      va_end( argp );
+        -:   19:
+        4:   20:      if( wrote > 1 )
+        -:   21:      {
+        -:   22:          // allocate needed number of chars
+        4:   23:          str.resize( wrote );
+        4:   24:          va_start(argp, fmt);
+        8:   25:          vsnprintf( &str[0], wrote+1, fmt, argp );
+        4:   26:          va_end( argp );
+        4:   27:      }
+        -:   28:
+        4:   29:      return str;
+        8:   30:  }
+        -:   31:
+        -:   32:  // static
+        -:   33:  /*
+        -:   34:   * NOTE: return value will either use RVO or move semantics, so
+        -:   35:   * don't worry about excessive copying.
+        -:   36:   */
+        3:   37:  std::vector< std::string > StringUtil::split( const std::string& in_string,
+        3:   38:                                                const char token )
+        -:   39:  {
+        3:   40:      std::vector< std::string > out_strings;
+        3:   41:      std::stringstream ss( in_string );
+        3:   42:      std::string item;
+       57:   43:      while( std::getline( ss, item, token ) )
+        -:   44:      {
+       15:   45:          out_strings.push_back( item );
+       15:   46:      }
+        3:   47:      return out_strings;
+        6:   48:  }
+        -:   49:
+        -:   50:  // static
+        -:   51:  /*
+        -:   52:   * NOTE: return value will either use RVO or move semantics, so
+        -:   53:   * don't worry about excessive copying.
+        -:   54:   */
+        2:   55:  std::string StringUtil::ltrim( const std::string &s )
+        -:   56:  {
+        2:   57:      std::string tmp;
+       10:   58:      std::copy(  std::find_if( s.begin(), s.end(),
+        6:   59:                                std::not1( std::ptr_fun< int, int >( std::isspace ) ) ),
+        2:   60:                  s.end(),
+        4:   61:                  std::back_inserter( tmp ) );
+        2:   62:      return tmp;
+        4:   63:  }
+        -:   64:
+        -:   65:  // static
+        -:   66:  /*
+        -:   67:   * NOTE: return value will either use RVO or move semantics, so
+        -:   68:   * don't worry about excessive copying.
+        -:   69:   */
+        2:   70:  std::string StringUtil::rtrim( const std::string &s )
+        -:   71:  {
+        2:   72:      std::string tmp;
+        6:   73:      std::copy( s.begin(),
+        8:   74:                 std::find_if( s.rbegin(), s.rend(),
+        6:   75:                               std::not1( std::ptr_fun< int, int >( std::isspace ) ) ).base(),
+        4:   76:                 std::back_inserter( tmp ) );
+        2:   77:      return tmp;
+        4:   78:  }
+        -:   79:  
+        -:   80:  
+        -:   81:  //static
+        -:   82:  /*
+        -:   83:   * NOTE: return value will either use RVO or move semantics, so
+        -:   84:   * don't worry about excessive copying.
+        -:   85:   */
+        1:   86:  std::string StringUtil::trim( const std::string &s )
+        -:   87:  {
+        2:   88:      return ltrim( rtrim( s ) );
+    #####:   89:  }  
+        -:   90:
+        -:   91:  // static 
+        4:   92:  bool StringUtil::ends_with( std::string const & value, std::string const & suffix )
+        -:   93:  {
+        4:   94:      if (suffix.size() > value.size()) return false;
+        4:   95:      return std::equal(suffix.rbegin(), suffix.rend(), value.rbegin());
+        4:   96:  }
+        -:   97:}
