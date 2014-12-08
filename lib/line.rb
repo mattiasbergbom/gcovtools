@@ -12,7 +12,9 @@ module GCOV
     end
 
     def self.parse line
-      count,number,text = line.split(":",3)
+      match = /^[ ]*([0-9]+|-|#####):[ ]*([0-9]+):(.*)/.match(line)
+      fail "Invalid line: #{line}" unless match.to_a.count == 4
+      count,number,text = match.to_a[1..3]
       number = number.to_i
       count = case count.strip
       when "-" then :none

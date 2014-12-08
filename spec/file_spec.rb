@@ -30,4 +30,10 @@ describe GCOV::File do
     end
     
   end
+
+  describe ".parse" do
+    it "parses a gcov file" do
+      
+    end
+  end
 end
