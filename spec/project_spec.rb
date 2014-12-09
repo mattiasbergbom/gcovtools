@@ -16,4 +16,19 @@ describe GCOV::Project do
       expect(project.files[1].name).to eq("boofar.cpp")
     end
   end
+
+  describe ".load_dir" do
+    it "finds all files in a directory" do
+      project = GCOV::Project.load_dir(File.join(File.dirname(__FILE__),"data"))
+      expect(project.files.count).to eq(3)
+      expect(project.files.map{|file|file.name}).to include(a_string_ending_with("test2.cpp.gcov"))
+      expect(project.files.map{|file|file.name}).not_to include(a_string_ending_with("test3.cpp.gcov"))
+    end
+    
+    it "recursively finds all files in a directory structure" do
+      project = GCOV::Project.load_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true)
+      expect(project.files.count).to eq(4)
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
+    end
+  end
 end

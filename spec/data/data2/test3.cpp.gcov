@@ -1,0 +1,22 @@
+        -:    0:Source:test3.cpp
+        -:    0:Graph:test3.gcno
+        -:    0:Data:test3.gcda
+        -:    0:Runs:4
+        -:    0:Programs:1
+        -:    1:
+        -:    2:int unreached3( int x )
+        -:    3:{
+    #####:    4:    int y = x;
+    #####:    5:    return y+3;
+        -:    6:}
+        -:    7:
+        -:    8:int reached3( int i )
+        -:    9:{
+        4:   10:    int j = i;
+        -:   11:
+        4:   12:    if( j == 2 )
+        4:   13:        return j;
+        -:   14:    
+    #####:   15:    return 3;
+        4:   16:}
+        -:   17:

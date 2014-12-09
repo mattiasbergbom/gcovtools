@@ -22,7 +22,7 @@ module GCOV
       end
     end
 
-    def self.parse filename
+    def self.load filename
       file = GCOV::File.new filename
       ::File.open(filename, "r") do |file_handle|
         file_handle.each_line do |line|
@@ -32,4 +32,5 @@ module GCOV
       file
     end
   end
+
 end

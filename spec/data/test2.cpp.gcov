@@ -1,0 +1,22 @@
+        -:    0:Source:test2.cpp
+        -:    0:Graph:test2.gcno
+        -:    0:Data:test2.gcda
+        -:    0:Runs:3
+        -:    0:Programs:1
+        -:    1:
+        -:    2:int unreached2( int x )
+        -:    3:{
+    #####:    4:    int y = x;
+    #####:    5:    return y+3;
+        -:    6:}
+        -:    7:
+        -:    8:int reached2( int i )
+        -:    9:{
+        3:   10:    int j = i;
+        -:   11:
+        3:   12:    if( j == 2 )
+        3:   13:        return j;
+        -:   14:    
+    #####:   15:    return 3;
+        3:   16:}
+        -:   17:
