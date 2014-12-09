@@ -7,7 +7,7 @@ require_relative './line'
 
 module GCOV
   
-  class ANSIIPrinter
+  class ANSIIFormatter
     
     def initialize project
       @project = project

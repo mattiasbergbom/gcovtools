@@ -3,31 +3,30 @@
 require 'mixlib/cli'
 
 require_relative '../lib/gcov2x'
-require_relative '../lib/ansii_printer'
+require_relative '../lib/ansii_formatter'
+require_relative '../lib/xml_formatter'
+require_relative '../lib/html_formatter'
 
 
 class CGOV_CLI
   include Mixlib::CLI
   
-  # option :config_file, 
-  #   :short => "-c CONFIG",
-  #   :long  => "--config CONFIG",
-  #   :default => 'config.rb',
-  #   :description => "The configuration file to use"
-
-  # option :log_level, 
-  #   :short => "-l LEVEL",
-  #   :long  => "--log_level LEVEL",
-  #   :description => "Set the log level (debug, info, warn, error, fatal)",
-  #   :required => true,
-  #   :proc => Proc.new { |l| l.to_sym }
-  
   option :format,
   :short => "-f FORMAT",
   :long => "--format FORMAT",
-  :description => "The output format (ascii, xml, json)",
+  :description => "The output format (ascii, html, xml, json)",
   :proc => Proc.new { |f| f.to_sym }
   
+  option :css,
+  :short => "-c CSS",
+  :long => "--css CSS",
+  :description => "The CSS file to reference for styling HTML/XML output."
+
+  option :xsl,
+  :short => "-x XSL",
+  :long => "--xsl XSL",
+  :description => "The XSL file to reference for formatting XML data."
+
   option :recursive,
   :short => "-r",
   :long => "--recursive",
@@ -63,10 +62,14 @@ end
 
 case cli.config[:format]
 when :ascii then
-  printer = GCOV::ANSIIPrinter.new proj
-  printer.print
+  formatter = GCOV::ANSIIFormatter.new proj
+  formatter.print
+when :html then
+  formatter = GCOV::HTMLFormatter.new( proj, :css => cli.config[:css] )
+  formatter.print
 when :xml then
-  fail "XML export not implemented yet"
+  formatter = GCOV::XMLFormatter.new( proj, :xsl => cli.config[:xsl] )
+  formatter.print
 when :json then
   fail "json export not implemented yet"
 else

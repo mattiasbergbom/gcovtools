@@ -1,0 +1,45 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Code Coverage for Project <%= @project.name %></title>
+  <meta name="description" content="gcov generated code coverage view for <%=@project.name%>">
+  <meta name="author" content="SwarmPlanet AB">
+  
+  <%= @csslink %>
+  
+</head>
+
+<body>
+
+  <div align="center">
+    <h1> Code Coverage For Project <%= @project.name %> </h1>
+  </div>
+
+  <table class="project" cols="1" width="90%" align="center">
+    <tr>
+      <td class="header" width="100%">
+        <strong>code</strong>
+      </td>
+    </tr>
+    <% @project.files.each do |file| %>
+        <tr>
+            <td class="file">
+                <strong><%=file.name%></strong>
+            </td>
+        </tr>
+        <% file.lines.each do |line| %>
+            <tr class="<%= class_of( line ) %>">
+                <td class="code">
+                    <div class="code"><pre class="code"><%= line.text %></pre></div>
+                </td>
+            </tr>
+        <% end %>
+    <% end %>
+  </table>
+  
+</body>
+
+</html>

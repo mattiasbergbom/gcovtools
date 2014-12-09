@@ -6,8 +6,10 @@ module GCOV
   class Project
     
     attr_reader :files
+    attr_accessor :name
 
-    def initialize
+    def initialize name=""
+      @name = name
       @files = []
     end
 

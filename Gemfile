@@ -6,3 +6,4 @@ gem "rspec"
 gem "terminal-table"
 gem "term-ansicolor"
 gem "mixlib-cli"
+gem 'gyoku', '~> 1.0'
