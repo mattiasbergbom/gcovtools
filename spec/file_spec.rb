@@ -33,9 +33,9 @@ describe GCOV::File do
 
   describe ".load" do
     it "can load a gcov file" do
-      file = GCOV::File.load(File.join(File.dirname(__FILE__),"test.cpp.gcov"))
-      expect(file.lines.count).to eq(97)
-      expect(file.meta["Graph"]).to eq("stringutil.cpp.gcno")
+      file = GCOV::File.load(File.join(File.dirname(__FILE__),"data/test.cpp.gcov"))
+      expect(file.lines.count).to eq(9)
+      expect(file.meta["Graph"]).to eq("test.gcno")
       expect(file.meta["Runs"].to_i).to eq(1)
     end
   end
