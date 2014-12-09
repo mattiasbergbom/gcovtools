@@ -1,5 +1,5 @@
-require 'file'
-require 'line'
+require_relative './file'
+require_relative './line'
 
 module GCOV
 

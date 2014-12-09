@@ -16,7 +16,8 @@ module GCOV
     def print
       
       @project.files.each do |file|
-        file.lines.each do |line|
+        puts "#{white}#{bold}=== #{file.meta['Source']} ===#{reset}"
+        file.lines.select{|line| line.number > 0}.each do |line|
           col = case line.count
                 when :none then dark+white
                 when :missed then black+on_red

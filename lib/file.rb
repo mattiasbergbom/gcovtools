@@ -1,4 +1,4 @@
-require 'line'
+require_relative './line'
 
 module GCOV
 
