@@ -1,4 +1,4 @@
-require 'project'
+require_relative './spec_helper'
 
 describe GCOV::Project do
 

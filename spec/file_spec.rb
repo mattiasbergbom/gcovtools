@@ -1,5 +1,4 @@
-require 'file'
-require 'line'
+require_relative './spec_helper'
 
 describe GCOV::File do
 

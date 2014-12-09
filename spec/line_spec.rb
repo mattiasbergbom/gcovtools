@@ -1,4 +1,4 @@
-require 'line'
+require_relative './spec_helper'
 
 describe GCOV::Line do
   describe "#number" do
