@@ -33,7 +33,9 @@ describe GCOV::File do
         file << GCOV::Line.new(5,:missed,"line 5")
       end
       expect(file.stats[:lines]).to eq(4)
+      expect(file.stats[:total_lines]).to eq(5)
       expect(file.stats[:total_exec]).to eq(27)
+      expect(file.stats[:empty_lines]).to eq(1)
       expect(file.stats[:exec_lines]).to eq(2)
       expect(file.stats[:missed_lines]).to eq(2)
       expect(file.stats[:coverage]).to eq(0.5)

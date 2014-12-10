@@ -48,7 +48,37 @@ describe GCOV::Project do
     it "recursively loads all files in the given directory structure" do
       project = GCOV::Project.load_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true)
       expect(project.files.count).to eq(4)
+      expect(project.files.map{|file|file.name}).to include(a_string_ending_with("test2.cpp.gcov"))
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
+    end
+
+  end
+
+  describe "#add_file" do
+    it "adds the given file" do
+      project = GCOV::Project.new
+      project.add_file(File.join(File.dirname(__FILE__),"data","test2.cpp.gcov"))
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp.gcov") )
+    end
+  end
+
+  describe "#add_dir" do
+    it "adds all files in the given directory" do
+      project = GCOV::Project.load_dir(File.join(File.dirname(__FILE__),"data","data2"))
+      project.add_dir(File.join(File.dirname(__FILE__),"data"))
+      expect(project.files.count).to eq(4)
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
+    end
+
+    it "recursively adds all files in the given directory" do
+      project = GCOV::Project.new
+      project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true)
+      expect(project.files.count).to eq(4)
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp.gcov") )
       expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
     end
   end
+
+
 end
