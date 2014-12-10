@@ -6,6 +6,7 @@ GEM
     gyoku (1.2.2)
       builder (>= 2.1.2)
     mixlib-cli (1.5.0)
+    rake (10.3.2)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
       rspec-expectations (~> 3.1.0)
@@ -29,6 +30,7 @@ PLATFORMS
 DEPENDENCIES
   gyoku (~> 1.0)
   mixlib-cli
+  rake
   rspec
   term-ansicolor
   terminal-table
