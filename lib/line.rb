@@ -3,12 +3,17 @@ module GCOV
 
   class Line
 
-    attr_reader :number, :count, :text
+    attr_reader :number, :count, :text, :state
     
     def initialize number, count, text
       @number = number
       @count = count
       @text = text
+      @state = case @count
+               when :missed then :missed
+               when :none then :none
+               else :exec
+               end
     end
 
     def self.parse line
@@ -17,10 +22,10 @@ module GCOV
       count,number,text = match.to_a[1..3]
       number = number.to_i
       count = case count.strip
-      when "-" then :none
-      when "#####" then :missed
-      else count.to_i
-      end
+              when "-" then :none
+              when "#####" then :missed
+              else count.to_i
+              end
       GCOV::Line.new number,count,text
     end
 

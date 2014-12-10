@@ -46,18 +46,18 @@ class CGOV_CLI
 end
 
 cli = CGOV_CLI.new
-filename = cli.parse_options
+filenames = cli.parse_options
 
-fail "Got no filename" unless filename.is_a? Array and filename.count > 0
-fail "Too many arguments" unless filename.count == 1
-fail "Invalid filename" unless filename[0].is_a? String and filename[0].size > 0
+fail "Got no filename" unless filenames.is_a? Array and filenames.count > 0
 
-if File.directory? filename[0]
-  proj = GCOV::Project.load_dir filename[0], :recursive => cli.config[:recursive]
-elsif File.file? filename[0]
-  fail "-r flag is invalid with a single file" unless !cli.config[:recursive]
-  proj = GCOV::Project.new
-  proj << GCOV::File.load(filename[0])
+proj = GCOV::Project.new
+
+filenames.each do |filename|
+  if File.directory? filename
+    proj.add_dir filename, :recursive => cli.config[:recursive]
+  elsif File.file? filename
+    proj.add_file filename
+  end
 end
 
 case cli.config[:format]

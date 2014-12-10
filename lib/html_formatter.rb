@@ -4,6 +4,7 @@ require_relative './file'
 require_relative './line'
 
 require 'erb'
+require 'cgi'
 
 module GCOV
   
@@ -20,60 +21,7 @@ module GCOV
       if !@css
         @csslink = <<EOF
       <style>
-        table.project, td.header, td.line {
-        border: 1px solid black;
-        }
 
-        table.project {
-           padding:0px;
-           border:0px;
-           border-spacing: 0px;
-           border-collapse: separate;
-        }
-
-        tr.ok {
-          background-color:#bbffbb;
-          padding-top: 0px;
-          padding-bottom: 0px;
-          padding-left: 0px;
-          padding-right: 0px;
-          margin:0px;
-        }
-
-        tr.none {
-          background-color:#f8f8f8;
-          padding-top: 0px;
-          padding-bottom: 0px;
-          padding-left: 0px;
-          padding-right: 0px;
-        }
-
-        tr.missed {
-          background-color:#ffbbbb;
-          padding-top: 0px;
-          padding-bottom: 0px;
-          padding-left: 0px;
-          padding-right: 0px;
-        }
-
-        .code {
-          height: 10pt; 
-          padding-top: 0px;
-          padding-bottom: 0px;
-          padding-left: 0px;
-          padding-right: 0px;
-          vertical-align:top;
-          margin-top: 0px;
-        }
-
-        div.code {
-          font-size:8pt         
-        }
-
-        td.file {
-          font-weight:bold;
-          font-color:black
-        }  
       </style>
 EOF
       else
@@ -85,10 +33,26 @@ EOF
     
     def class_of line
       case line.count
-      when :none then "none"
+      when :none then "moot"
       when :missed then "missed"
       else "ok"
       end
+    end
+
+    def class_of_stat value, &block
+      fail "class_of_stat needs a block" unless block_given?
+      return ( (yield value) ? "value" : "value_bad" )
+    end
+
+    def class_of_file file
+      case file.stats[:missed_lines]
+      when 0 then "header good"
+      else "header bad"
+      end
+    end
+
+    def encode text
+      CGI.escapeHTML( text )
     end
 
     def print

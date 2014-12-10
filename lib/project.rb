@@ -17,19 +17,25 @@ module GCOV
       @files << file
     end
 
-    def self.load_dir path, hash={}
-      project = GCOV::Project.new
-
+    def add_dir path, hash={}
       if hash[:recursive] == true
         filenames = Dir["#{path}/**/*.gcov"]
       else
         filenames = Dir["#{path}/*.gcov"]
       end
-
+      
       filenames.map{|filename| GCOV::File.load filename }.each do |file|
-        project << file
+        self << file
       end
+    end
 
+    def add_file path
+      self << GCOV::File.load(path)
+    end
+
+    def self.load_dir path, hash={}
+      project = GCOV::Project.new
+      project.add_dir path, hash
       project
     end
 
