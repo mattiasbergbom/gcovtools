@@ -7,37 +7,50 @@ require_relative '../lib/ansii_formatter'
 require_relative '../lib/xml_formatter'
 require_relative '../lib/html_formatter'
 
+class Util
+  def Util.opt_wrap(s, width=61)
+    s.gsub(/(.{1,#{width}})(\s+|\Z)/, "\\1\n                                     ")
+  end
+end
 
 class CGOV_CLI
   include Mixlib::CLI
   
+  option :filter,
+  :long => "--filter FILTER",
+  :description => Util.opt_wrap("A regex filter which specifies which files not to include in the conversion. Will filter on the actual filename (replacing any mangling done by llvm-cov using #'s) as well as the 'Source' meta attribute in the GCOV data. Available presets:
+xcode - Xcode system headers
+linux - Linux system headers
+"),
+  :proc => Proc.new { |f| (f.size > 0 and f[0] == ":" ? f[1..-1].to_sym : f ) }
+
   option :format,
   :short => "-f FORMAT",
   :long => "--format FORMAT",
-  :description => "The output format (ascii, html, xml, json)",
+  :description => Util.opt_wrap("The output format (ascii, html, xml, json)"),
   :proc => Proc.new { |f| f.to_sym }
   
   option :css,
   :short => "-c CSS",
   :long => "--css CSS",
-  :description => "The CSS file to reference for styling HTML/XML output."
+  :description => Util.opt_wrap("CSS file to reference in HTML output.")
 
   option :xsl,
   :short => "-x XSL",
   :long => "--xsl XSL",
-  :description => "The XSL file to reference for formatting XML data."
+  :description => Util.opt_wrap("XSL file to reference in XML output.")
 
   option :recursive,
   :short => "-r",
   :long => "--recursive",
-  :description => "Recursively load all .gcov files in the given directory",
+  :description => Util.opt_wrap("Recursively load all .gcov files in the given directory"),
   :on => :tail,
   :boolean => true
   
   option :help,
   :short => "-h",
   :long => "--help",
-  :description => "Show this message",
+  :description => Util.opt_wrap("Show this message"),
   :on => :tail,
   :boolean => true,
   :show_options => true,
@@ -50,13 +63,23 @@ filenames = cli.parse_options
 
 fail "Got no filename" unless filenames.is_a? Array and filenames.count > 0
 
+STDERR.puts "filter: #{cli.config[:filter]}"
+
 proj = GCOV::Project.new
+
+filter = case cli.config[:filter]
+         when :xcode then /Developer\/Toolchains\/.*\/usr\/include\//
+         when :linux then /\/usr\/include\//
+         else /#{cli.config[:filter]}/
+         end
+  
+STDERR.puts "filter regex: #{filter}"
 
 filenames.each do |filename|
   if File.directory? filename
-    proj.add_dir filename, :recursive => cli.config[:recursive]
+    proj.add_dir filename, :recursive => cli.config[:recursive], :filter => filter
   elsif File.file? filename
-    proj.add_file filename
+    proj.add_file filename, :filter => filter
   end
 end
 
