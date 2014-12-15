@@ -80,4 +80,44 @@ describe GCOV::Project do
     end
   end
 
+
+  describe "#stats" do
+    it "should be computed based on file stats" do
+      project = GCOV::Project.new
+
+      project.add_files do
+        file = GCOV::File.new "myfile.cpp"
+        file.add_lines do
+          file << GCOV::Line.new(1,4,"line 1")
+          file << GCOV::Line.new(2,23,"line 2")
+          file << GCOV::Line.new(3,:none,"line 3")
+          file << GCOV::Line.new(4,:missed,"line 4")
+          file << GCOV::Line.new(5,:none,"line 5")
+        end
+
+        project << file
+
+        file = GCOV::File.new "myfile.cpp"
+        file.add_lines do
+          file << GCOV::Line.new(1,:missed,"line 1")
+          file << GCOV::Line.new(2,40,"line 2")
+          file << GCOV::Line.new(3,:none,"line 3")
+          file << GCOV::Line.new(4,:none,"line 4")
+        end
+
+        project << file
+        
+      end
+      
+      expect(project.stats[:lines]).to eq(5)
+      expect(project.stats[:total_lines]).to eq(9)
+      expect(project.stats[:total_exec]).to eq(67)
+      expect(project.stats[:empty_lines]).to eq(4)
+      expect(project.stats[:exec_lines]).to eq(3)
+      expect(project.stats[:missed_lines]).to eq(2)
+      expect(project.stats[:coverage]).to eq(3.0/5)
+      expect(project.stats[:hits_per_line]).to eq(67.0/5)
+
+    end      
+  end
 end

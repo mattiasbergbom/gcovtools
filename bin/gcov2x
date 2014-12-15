@@ -68,6 +68,7 @@ proj = GCOV::Project.new
 filter = case cli.config[:filter]
          when :xcode then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
          when :linux then /\/usr\/include\//
+         when nil then nil
          else /#{cli.config[:filter]}/
          end
   

@@ -39,7 +39,7 @@ describe GCOV::File do
       expect(file.stats[:exec_lines]).to eq(2)
       expect(file.stats[:missed_lines]).to eq(2)
       expect(file.stats[:coverage]).to eq(0.5)
-      expect(file.stats[:total_exec]).to eq(27)
+      expect(file.stats[:hits_per_line]).to eq(27.0/4)
     end
   end
 

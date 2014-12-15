@@ -24,6 +24,7 @@ module GCOV
       @lines = []
       @meta = {}
       @stats = {}
+      _update_stats
     end
 
     def add_lines &block
@@ -42,7 +43,8 @@ module GCOV
         :total_exec => 0,
         :total_lines => 0,
         :lines => 0,
-        :coverage => 0.0 
+        :coverage => 0.0,
+        :hits_per_line => 0.0
       }
 
       @lines.each do |line|
@@ -56,6 +58,8 @@ module GCOV
       @stats[:total_lines] = @stats[:lines] + @stats[:empty_lines]
       @stats[:coverage] = @stats[:exec_lines].to_f / @stats[:lines].to_f
       @stats[:coverage_s] = sprintf("%0.01f%",100.0*@stats[:coverage])
+      @stats[:hits_per_line] = @stats[:total_exec].to_f / @stats[:lines]
+      @stats[:hits_per_line_s] = sprintf("%0.02f",@stats[:hits_per_line])
     end
 
     def <<(line)
