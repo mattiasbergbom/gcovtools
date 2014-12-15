@@ -29,9 +29,6 @@ module GCOV
       GCOV::Line.new number,count,text
     end
 
-    def to_s
-      "#{@number}:#{@count}:#{@text}"
-    end
   end
 
 end

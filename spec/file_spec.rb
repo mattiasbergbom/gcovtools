@@ -70,4 +70,12 @@ describe GCOV::File do
       expect(file.meta["Runs"].to_i).to eq(1)
     end
   end
+
+  describe ".demangle" do
+    it "should demangle file names" do
+      demangled = GCOV::File.demangle( "stringutil.cpp.###Applications#Xcode.app#Contents#Developer#Toolchains#XcodeDefault.xctoolchain#usr#bin#^#include#c++#v1#streambuf.gcov" )
+      expect( demangled ).to eq("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/streambuf")
+    end
+  end
+
 end

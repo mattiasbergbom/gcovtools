@@ -79,6 +79,18 @@ module GCOV
       end
       file
     end
-  end
+
+    def self.demangle filename
+      result = filename
+      if start = result.index(/###/)
+        result = result[start..-1]
+      end
+      
+      result.gsub!( /(###|#|\^|\.gcov$)/, {"###"=>"/","#"=>"/","^"=>"..",".gcov"=>""} ) 
+      result = ::File.realpath(result)
+      result
+    end
+
+  end # class File
 
 end

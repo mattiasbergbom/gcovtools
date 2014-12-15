@@ -63,18 +63,14 @@ filenames = cli.parse_options
 
 fail "Got no filename" unless filenames.is_a? Array and filenames.count > 0
 
-STDERR.puts "filter: #{cli.config[:filter]}"
-
 proj = GCOV::Project.new
 
 filter = case cli.config[:filter]
-         when :xcode then /Developer\/Toolchains\/.*\/usr\/include\//
+         when :xcode then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
          when :linux then /\/usr\/include\//
          else /#{cli.config[:filter]}/
          end
   
-STDERR.puts "filter regex: #{filter}"
-
 filenames.each do |filename|
   if File.directory? filename
     proj.add_dir filename, :recursive => cli.config[:recursive], :filter => filter

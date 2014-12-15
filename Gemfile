@@ -9,3 +9,4 @@ gem "mixlib-cli"
 gem 'gyoku', '~> 1.0'
 gem 'rake'
 gem 'rubygems-tasks'
+gem 'simplecov', :require => false, :group => :test

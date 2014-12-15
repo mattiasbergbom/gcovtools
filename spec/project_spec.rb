@@ -80,5 +80,4 @@ describe GCOV::Project do
     end
   end
 
-
 end
