@@ -1,4 +1,5 @@
 require_relative './line'
+require 'pathname'
 
 class TrueClass
   def to_i
