@@ -72,9 +72,9 @@ describe GCOV::File do
   end
 
   describe ".demangle" do
-    it "should demangle file names" do
-      demangled = GCOV::File.demangle( "stringutil.cpp.###Applications#Xcode.app#Contents#Developer#Toolchains#XcodeDefault.xctoolchain#usr#bin#^#include#c++#v1#streambuf.gcov" )
-      expect( demangled ).to eq("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/streambuf")
+    it "should demangle file names with nonexisting components" do
+      demangled = GCOV::File.demangle( "testfile.cpp.###Applications#Xcode.app#Nonexisting#Path#Contents#Developer#Toolchains#XcodeDefault.xctoolchain#usr#bin#^#include#c++#v1#streambuf.gcov" )
+      expect( demangled ).to eq("/Applications/Xcode.app/Nonexisting/Path/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/streambuf")
     end
   end
 

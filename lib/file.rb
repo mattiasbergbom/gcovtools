@@ -91,7 +91,7 @@ module GCOV
       end
       
       result.gsub!( /(###|#|\^|\.gcov$)/, {"###"=>"/","#"=>"/","^"=>"..",".gcov"=>""} ) 
-      result = ::File.realpath(result)
+      result = ::Pathname.new(result).cleanpath.to_s
       result
     end
 
