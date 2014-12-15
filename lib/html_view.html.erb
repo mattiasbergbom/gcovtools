@@ -38,12 +38,16 @@ if(k&&j[k]&&(e||j[k].data)||void 0!==d||"string"!=typeof b)return k||(k=i?a[h]=c
              font-family: Sans-serif;
          }
          
-         .container .good {
+         .container .ok {
              background-color:#bbffbb;
          }
          
-         .container .bad {
+         .container .error {
              background-color:#ffbbbb;
+         }
+
+         .container .warning {
+             background-color:#ffdd99;
          }
 
          .container .content {
@@ -124,10 +128,14 @@ if(k&&j[k]&&(e||j[k].data)||void 0!==d||"string"!=typeof b)return k||(k=i?a[h]=c
          .stats .value {
          }
          
-         .stats .value_bad {
+         .stats .value_error {
              color:red;
          }
          
+         .stats .value_warning {
+             color:orange;
+         }
+
          .stats .stats_header {
              background-color:#d3d3d3;
              padding: 2px;
@@ -162,17 +170,29 @@ if(k&&j[k]&&(e||j[k].data)||void 0!==d||"string"!=typeof b)return k||(k=i?a[h]=c
         </div>
 
         <div class="toplevel">
+            <div class="stats">
+                <div class="stats_header">Project Statistics</div>
+                <div class="stats_line"><div class="title">Files</div><div class="value"><%=@project.files.count%></div></div>
+                <div class="stats_line"><div class="title">Coverage</div><div class="<%= class_of_stat(@project.stats[:coverage], 0.9, 1)%>"><%=@project.stats[:coverage_s]%></div></div>
+                <div class="stats_line"><div class="title">Total lines</div><div class="value"><%=@project.stats[:total_lines]%></div></div>
+                <div class="stats_line"><div class="title">Executable lines</div><div class="value"><%=@project.stats[:lines]%></div></div>
+                <div class="stats_line"><div class="title">Executed lines</div><div class="value"><%=@project.stats[:exec_lines]%></div></div>
+                <div class="stats_line"><div class="title">Missed lines</div><div class="<%= class_of_stat(@project.stats[:missed_lines],0) %>"><%=@project.stats[:missed_lines]%></div></div>
+                <div class="stats_line"><div class="title">Hits per line</div><div class="value"><%=@project.stats[:hits_per_line_s]%></div></div>
+            </div>
+            <br/ >
             <% @project.files.each do |file| %>
                 <div class="container">
-                    <div class="<%=class_of_file file%>"><%=file.meta['Source']%> (<%=file.stats[:coverage_s]%>)</div>
+                    <div class="<%=class_of_file(file,0.9,1)%>"><%=file.meta['Source']%> (<%=file.stats[:coverage_s]%>)</div>
                     <div class="content">
                         <div class="stats">
-                            <div class="stats_header">Statistics</div>
-                            <div class="stats_line"><div class="title">Coverage</div><div class="<%= class_of_stat(file.stats[:coverage]) {|v| v >= 0.9 } %>"><%=file.stats[:coverage_s]%></div></div>
+                            <div class="stats_header">File Statistics</div>
+                            <div class="stats_line"><div class="title">Coverage</div><div class="<%= class_of_stat(file.stats[:coverage], 0.9, 1) %>"><%=file.stats[:coverage_s]%></div></div>
                             <div class="stats_line"><div class="title">Total lines</div><div class="value"><%=file.stats[:total_lines]%></div></div>
                             <div class="stats_line"><div class="title">Executable lines</div><div class="value"><%=file.stats[:lines]%></div></div>
                             <div class="stats_line"><div class="title">Executed lines</div><div class="value"><%=file.stats[:exec_lines]%></div></div>
-                            <div class="stats_line"><div class="title">Missed lines</div><div class="<%= class_of_stat(file.stats[:missed_lines]) {|v| v == 0 } %>"><%=file.stats[:missed_lines]%></div></div>
+                            <div class="stats_line"><div class="title">Missed lines</div><div class="<%= class_of_stat(file.stats[:missed_lines],0) %>"><%=file.stats[:missed_lines]%></div></div>
+                            <div class="stats_line"><div class="title">Hits per line</div><div class="value"><%=file.stats[:hits_per_line_s]%></div></div>
                         </div>
                         <div class="code">
                             <% file.lines.each do |line| %><div class="<%= class_of line %>"><%= encode(line.text) %></div><% end %>

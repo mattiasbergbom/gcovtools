@@ -39,15 +39,23 @@ EOF
       end
     end
 
-    def class_of_stat value, &block
-      fail "class_of_stat needs a block" unless block_given?
-      return ( (yield value) ? "value" : "value_bad" )
+    def class_of_stat value, error_level, warning_level=nil
+      if value <= error_level
+        return "value_error"
+      elsif !warning_level.nil? and value < warning_level
+        return "value_warning"
+      else
+        return "value_ok"
+      end
     end
 
-    def class_of_file file
-      case file.stats[:missed_lines]
-      when 0 then "header good"
-      else "header bad"
+    def class_of_file file, error_level, warning_level=nil
+      if file.stats[:coverage] <= error_level
+        return "header error"
+      elsif !warning_level.nil? and file.stats[:coverage] < warning_level
+        return "header warning"
+      else
+        return "header ok"
       end
     end
 
