@@ -6,6 +6,7 @@ require_relative '../lib/gcov2x'
 require_relative '../lib/ansii_formatter'
 require_relative '../lib/xml_formatter'
 require_relative '../lib/html_formatter'
+require_relative '../lib/json_formatter'
 
 class Util
   def Util.opt_wrap(s, width=61)
@@ -91,7 +92,8 @@ when :xml then
   formatter = GCOV::XMLFormatter.new( proj, :xsl => cli.config[:xsl] )
   formatter.print
 when :json then
-  fail "json export not implemented yet"
+  formatter = GCOV::JSONFormatter.new proj
+  formatter.print
 else
   fail "Invalid format"
 end
