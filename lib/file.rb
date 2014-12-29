@@ -86,7 +86,7 @@ module GCOV
     end
 
     def self.demangle filename
-      result = filename
+      result = filename.dup
       if start = result.index(/###/)
         result = result[start..-1]
       end
