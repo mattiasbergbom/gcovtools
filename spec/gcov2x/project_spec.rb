@@ -41,15 +41,15 @@ describe GCOV::Project do
     it "loads all files in the given directory" do
       project = GCOV::Project.load_dir(File.join(File.dirname(__FILE__),"data"))
       expect(project.files.count).to eq(3)
-      expect(project.files.map{|file|file.name}).to include(a_string_ending_with("test2.cpp.gcov"))
-      expect(project.files.map{|file|file.name}).not_to include(a_string_ending_with("test3.cpp.gcov"))
+      expect(project.files.map{|file|file.name}).to include(a_string_ending_with("test2.cpp"))
+      expect(project.files.map{|file|file.name}).not_to include(a_string_ending_with("test3.cpp"))
     end
     
     it "recursively loads all files in the given directory structure" do
       project = GCOV::Project.load_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true)
       expect(project.files.count).to eq(4)
-      expect(project.files.map{|file|file.name}).to include(a_string_ending_with("test2.cpp.gcov"))
-      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).to include(a_string_ending_with("test2.cpp"))
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp") )
     end
 
   end
@@ -58,7 +58,7 @@ describe GCOV::Project do
     it "adds the given file" do
       project = GCOV::Project.new
       project.add_file(File.join(File.dirname(__FILE__),"data","test2.cpp.gcov"))
-      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp") )
     end
   end
 
@@ -67,32 +67,32 @@ describe GCOV::Project do
       project = GCOV::Project.load_dir(File.join(File.dirname(__FILE__),"data","data2"))
       project.add_dir(File.join(File.dirname(__FILE__),"data"))
       expect(project.files.count).to eq(4)
-      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp.gcov") )
-      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp") )
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp") )
     end
 
     it "recursively adds all files in the given directory" do
       project = GCOV::Project.new
       project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true)
       expect(project.files.count).to eq(4)
-      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp.gcov") )
-      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp") )
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp") )
     end
 
     it "filters using given singular expression" do
       project = GCOV::Project.new
       project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true, :filter => /test2\.cpp/)
       expect(project.files.count).to eq(3)
-      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test2.cpp.gcov") )
-      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test2.cpp") )
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp") )
     end
 
     it "filters using given array of expressions" do
       project = GCOV::Project.new
       project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true, :filter => [/test2\.cpp/,/test3\.cpp/])
       expect(project.files.count).to eq(2)
-      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test2.cpp.gcov") )
-      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test3.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test2.cpp") )
+      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test3.cpp") )
     end
   end
 

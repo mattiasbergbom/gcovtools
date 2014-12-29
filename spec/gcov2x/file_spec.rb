@@ -77,10 +77,22 @@ describe GCOV::File do
 
   describe ".load" do
     it "can load a gcov file" do
-      file = GCOV::File.load(File.join(File.dirname(__FILE__),"data/test.cpp.gcov"))
+      file = GCOV::File.load(File.join(File.dirname(__FILE__),"data/test.cpp.gcov"))[0]
       expect(file.lines.count).to eq(9)
       expect(file.meta["Graph"]).to eq("test.gcno")
       expect(file.meta["Runs"].to_i).to eq(1)
+    end
+
+    it "should split concatenated gcov files into multiple objects" do
+      files = GCOV::File.load(File.join(File.dirname(__FILE__),"concat/test_cat.cpp.gcov"))
+      
+      expect(files.count).to eq(2)
+      expect(files[0].meta["Source"]).to eq("test.cpp")
+      expect(files[1].meta["Source"]).to eq("test1.cpp")
+
+      expect(files[0].lines.count).to eq(9)
+      expect(files[0].meta["Graph"]).to eq("test.gcno")
+      expect(files[0].meta["Runs"].to_i).to eq(1)
     end
   end
 

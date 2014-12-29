@@ -71,8 +71,7 @@ module GCOV
 
     end
 
-    def <<(line)
-      fail "need to be in add_lines block" unless @adding
+    def _add_line line
       if line.number == 0
         key,val = /([^:]+):(.*)$/.match(line.text).to_a[1..2]
         @meta[key] = val
@@ -81,16 +80,32 @@ module GCOV
       end
     end
 
+    def <<(line)
+      fail "need to be in add_lines block" unless @adding
+      _add_line line
+    end
+
     def self.load filename
-      file = GCOV::File.new filename
+      files = []
+      file = nil
       ::File.open(filename, "r") do |file_handle|
-        file.add_lines do
-          file_handle.each_line do |line|
-            file << GCOV::Line.parse(line)
-          end
-        end
-      end
-      file
+        file_handle.each_line do |line_|
+          line = GCOV::Line.parse(line_)
+          if line.number == 0
+            key,val = /([^:]+):(.*)$/.match(line.text).to_a[1..2]
+            if key == 'Source'
+              if !file.nil?
+                file._update_stats
+                files << file
+              end # if
+              file = GCOV::File.new val
+            end # if source
+          end # if line == 0
+          file._add_line line
+        end # each line
+      end# file_handle
+      files << file
+      files
     end
 
     def self.demangle filename

@@ -1,0 +1,35 @@
+        -:    0:Source:test.cpp
+        -:    0:Graph:test.gcno
+        -:    0:Data:test.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include "test.h"
+        -:    2:
+        -:    3:int main( int argc, const char* argv[] )
+        -:    4:{
+        1:    5:    reached(2);
+        1:    6:    reached2(2);
+        1:    7:    reached3(2);
+        1:    8:    return 0;
+        -:    9:}
+        -:    0:Source:test1.cpp
+        -:    0:Graph:test1.gcno
+        -:    0:Data:test1.gcda
+        -:    0:Runs:2
+        -:    0:Programs:1
+        -:    1:
+        -:    2:int reached( int i )
+        -:    3:{
+        2:    4:    int j = i;
+        -:    5:
+        2:    6:    if( j == 2 )
+        2:    7:        return j;
+        -:    8:    
+    #####:    9:    return 3;
+        2:   10:}
+        -:   11:
+        -:   12:int unreached( int x )
+        -:   13:{
+    #####:   14:    int y = x;
+    #####:   15:    return y+3;
+        -:   16:}
