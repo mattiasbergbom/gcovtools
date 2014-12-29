@@ -12,4 +12,5 @@ Gem::Specification.new do |gem|
   gem.executables = ["gcov2x"]
   gem.homepage    = 'http://rubygems.org/gems/gcov2x'
   gem.license     = 'MIT'
+  gem.required_ruby_version = '>= 2.0'
 end
