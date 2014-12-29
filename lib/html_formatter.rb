@@ -39,10 +39,10 @@ EOF
       end
     end
 
-    def class_of_stat value, error_level, warning_level=nil
-      if value <= error_level
+    def class_of_stat value, error_comp, warning_comp=nil
+      if eval("#{value}#{error_comp}")
         return "value_error"
-      elsif !warning_level.nil? and value < warning_level
+      elsif !warning_comp.nil? and eval("#{value}#{warning_comp}")
         return "value_warning"
       else
         return "value_ok"
