@@ -1,5 +1,13 @@
+PATH
+  remote: .
+  specs:
+    gcov2x (0.4.0)
+      gyoku (~> 1.0)
+      mixlib-cli
+      term-ansicolor
+      terminal-table
+
 GEM
-  remote: https://rubygems.org/
   specs:
     builder (3.2.2)
     diff-lcs (1.2.5)
@@ -36,11 +44,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  gyoku (~> 1.0)
-  mixlib-cli
+  gcov2x!
   rake
   rspec
   rubygems-tasks
   simplecov
-  term-ansicolor
-  terminal-table

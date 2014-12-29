@@ -1,6 +1,7 @@
 require File.expand_path('../lib/version.rb', __FILE__)
 
 Gem::Specification.new do |gem|
+
   gem.name        = 'gcov2x'
   gem.version     = GCOV::VERSION
   gem.date        = '2014-12-09'
@@ -13,4 +14,15 @@ Gem::Specification.new do |gem|
   gem.homepage    = 'http://rubygems.org/gems/gcov2x'
   gem.license     = 'MIT'
   gem.required_ruby_version = '>= 2.0'
+
+  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rubygems-tasks'
+  gem.add_development_dependency 'simplecov'
+  
+  gem.add_runtime_dependency 'terminal-table'
+  gem.add_runtime_dependency 'term-ansicolor'
+  gem.add_runtime_dependency 'mixlib-cli'
+  gem.add_runtime_dependency 'gyoku', '~> 1.0'
+
 end
