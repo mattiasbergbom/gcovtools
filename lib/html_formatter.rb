@@ -33,7 +33,7 @@ EOF
     
     def class_of line
       case line.count
-      when :none then "moot"
+      when :none then "irrelevant"
       when :missed then "missed"
       else "ok"
       end
@@ -56,6 +56,14 @@ EOF
         return "header warning"
       else
         return "header ok"
+      end
+    end
+
+    def count_of line
+      case line.count
+      when :none then ""
+      when :missed then "<strong>miss</strong>"
+      else line.count
       end
     end
 
