@@ -54,10 +54,18 @@ module GCOV
         
       @stats[:lines] = @stats[:exec_lines] + @stats[:missed_lines]
       @stats[:total_lines] = @stats[:lines] + @stats[:empty_lines]
-      @stats[:coverage] = @stats[:exec_lines].to_f / @stats[:lines].to_f
+
+      if @stats[:lines] > 0
+        @stats[:coverage] = @stats[:exec_lines].to_f / @stats[:lines].to_f
+        @stats[:hits_per_line] = @stats[:total_exec].to_f / @stats[:lines]
+      else
+        @stats[:coverage] = 1
+        @stats[:hits_per_line] = 0
+      end  
+      
       @stats[:coverage_s] = sprintf("%0.01f%",100.0*@stats[:coverage])
-      @stats[:hits_per_line] = @stats[:total_exec].to_f / @stats[:lines]
       @stats[:hits_per_line_s] = sprintf("%0.02f",@stats[:hits_per_line])
+
     end
 
     def add_dir path, hash={}
