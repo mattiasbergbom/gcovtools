@@ -19,11 +19,17 @@ class CGOV_CLI
   
   option :filter,
   :long => "--filter FILTER",
-  :description => Util.opt_wrap("A regex filter which specifies which files not to include in the conversion. Will filter on the actual filename (replacing any mangling done by llvm-cov using #'s) as well as the 'Source' meta attribute in the GCOV data. Available presets:
-xcode - Xcode system headers
-linux - Linux system headers
+  :description => Util.opt_wrap("A semicolon-separated list of regex filters which specify which files NOT to include in the conversion. Will filter on the actual filename (replacing any mangling done by llvm-cov using #'s) as well as the 'Source' meta attribute in the GCOV data. 
+Available presets:
+:xcode - Xcode system headers
+:linux - Linux system headers
 "),
-  :proc => Proc.new { |f| (f.size > 0 and f[0] == ":" ? f[1..-1].to_sym : f ) }
+  :proc => Proc.new { |f|
+    values = f.split(';')
+    values = values.map{|f| f.size > 0 and f[0] == ":" ? f[1..-1].to_sym : f }
+    values
+  },
+  :on => :tail
 
   option :format,
   :short => "-f FORMAT",
@@ -66,13 +72,16 @@ fail "Got no filename" unless filenames.is_a? Array and filenames.count > 0
 
 proj = GCOV::Project.new
 
-filter = case cli.config[:filter]
-         when :xcode then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
-         when :linux then /\/usr\/include\//
-         when nil then nil
-         else /#{cli.config[:filter]}/
-         end
-  
+filter = []
+cli.config[:filter].each do |f|
+  filter <<  case f
+              when :xcode then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
+              when :linux then /\/usr\/include\//
+              when nil then nil
+              else /#{f}/
+              end
+end # f
+
 filenames.each do |filename|
   if File.directory? filename
     proj.add_dir filename, :recursive => cli.config[:recursive], :filter => filter

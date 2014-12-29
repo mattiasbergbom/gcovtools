@@ -78,6 +78,22 @@ describe GCOV::Project do
       expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test2.cpp.gcov") )
       expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
     end
+
+    it "filters using given singular expression" do
+      project = GCOV::Project.new
+      project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true, :filter => /test2\.cpp/)
+      expect(project.files.count).to eq(3)
+      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test2.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp.gcov") )
+    end
+
+    it "filters using given array of expressions" do
+      project = GCOV::Project.new
+      project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true, :filter => [/test2\.cpp/,/test3\.cpp/])
+      expect(project.files.count).to eq(2)
+      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test2.cpp.gcov") )
+      expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test3.cpp.gcov") )
+    end
   end
 
 
