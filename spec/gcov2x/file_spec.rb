@@ -41,6 +41,19 @@ describe GCOV::File do
       expect(file.stats[:coverage]).to eq(0.5)
       expect(file.stats[:hits_per_line]).to eq(27.0/4)
     end
+
+    it "handles files with 0 executable lines" do
+      file = GCOV::File.new "myfile.cpp"
+      file.add_lines do
+        file << GCOV::Line.new(1,:none,"line 1")
+        file << GCOV::Line.new(2,:none,"line 2")
+        file << GCOV::Line.new(3,:none,"line 3")
+        file << GCOV::Line.new(4,:none,"line 4")
+      end
+      expect(file.stats[:lines]).to eq(0)
+      expect(file.stats[:coverage]).to eq(1)
+      expect(file.stats[:hits_per_line]).to eq(0)
+    end
   end
 
   describe "#lines" do
