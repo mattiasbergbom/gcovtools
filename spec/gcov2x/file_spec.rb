@@ -62,11 +62,11 @@ describe GCOV::File do
       expect(file.lines.count).to eq(0)
     end
     
-    it "returns the lines it was given" do
+    it "should return the lines it was given, sorted by number" do
       file = GCOV::File.new "myfile.cpp"
       file.add_lines do
-        file << GCOV::Line.new(1,4,"line 1")
         file << GCOV::Line.new(2,23,"line 2")
+        file << GCOV::Line.new(1,4,"line 1")
       end
       expect(file.lines.count).to eq(2)
       expect(file.lines[0].number).to eq(1)
@@ -103,4 +103,38 @@ describe GCOV::File do
     end
   end
 
+  describe "#merge" do
+
+    it "should merge the counts of each line and recompute stats" do
+      file = GCOV::File.new "myfile.cpp"
+      file.add_lines do
+        file << GCOV::Line.new(1,4,"line 1")
+        file << GCOV::Line.new(2,23,"line 2")
+        file << GCOV::Line.new(3,:none,"line 3")
+        file << GCOV::Line.new(4,:missed,"line 4")
+        file << GCOV::Line.new(5,:missed,"line 5")
+      end
+
+      file2 = GCOV::File.new "myfile.cpp"
+      file2.add_lines do
+        file2 << GCOV::Line.new(1,1,"line 1")
+        file2 << GCOV::Line.new(2,:missed,"line 2")
+        file2 << GCOV::Line.new(3,:none,"line 3")
+        file2 << GCOV::Line.new(4,4,"line 4")
+        file2 << GCOV::Line.new(5,:missed,"line 5")
+      end
+
+      file3 = file.merge file2
+
+      expect(file3.stats[:lines]).to eq(4)
+      expect(file3.stats[:total_lines]).to eq(5)
+      expect(file3.stats[:total_exec]).to eq(32)
+      expect(file3.stats[:empty_lines]).to eq(1)
+      expect(file3.stats[:exec_lines]).to eq(3)
+      expect(file3.stats[:missed_lines]).to eq(1)
+      expect(file3.stats[:coverage]).to eq(0.75)
+      expect(file3.stats[:hits_per_line]).to eq(32.0/4)
+
+    end # it
+  end # describe
 end

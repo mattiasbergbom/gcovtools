@@ -3,17 +3,20 @@ module GCOV
 
   class Line
 
-    attr_reader :number, :count, :text, :state
+    attr_reader :number, :count, :text
     
     def initialize number, count, text
       @number = number
       @count = count
       @text = text
-      @state = case @count
-               when :missed then :missed
-               when :none then :none
-               else :exec
-               end
+    end
+
+    def state
+      case @count
+      when :missed then :missed
+      when :none then :none
+      else :exec
+      end
     end
 
     def self.parse line
@@ -27,6 +30,24 @@ module GCOV
               else count.to_i
               end
       GCOV::Line.new number,count,text
+    end
+
+    def merge! other
+      if other.count.is_a? Integer and @count.is_a? Integer
+        @count += other.count
+      elsif other.count.is_a? Integer
+        @count = other.count
+      elsif @count.is_a? Integer
+        nil
+      elsif other.count == :missed or @count == :missed
+        @count = :missed
+      end
+    end
+
+    def merge other
+      result = self.dup
+      result.merge! other
+      result
     end
 
   end

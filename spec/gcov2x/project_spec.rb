@@ -32,8 +32,8 @@ describe GCOV::Project do
       project << GCOV::File.new("foobar.cpp")
       project << GCOV::File.new("boofar.cpp")
       expect(project.files.count).to eq(2)
-      expect(project.files[0].name).to eq("foobar.cpp")
-      expect(project.files[1].name).to eq("boofar.cpp")
+      expect(project.files.map(&:name)).to include(a_string_ending_with("foobar.cpp"))
+      expect(project.files.map(&:name)).to include(a_string_ending_with("boofar.cpp"))
     end
   end
 
@@ -55,7 +55,7 @@ describe GCOV::Project do
   end
 
   describe "#add_file" do
-    it "adds the given file" do
+    it "should add the given file" do
       project = GCOV::Project.new
       project.add_file(File.join(File.dirname(__FILE__),"data","test2.cpp.gcov"))
       expect(project.files.count).to eq(1)
@@ -91,7 +91,40 @@ describe GCOV::Project do
       expect(project.files.map(&:name)).to include( a_string_ending_with("test.cpp") )
       expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
     end
-  end
+
+    it "should merge file stats for identical filenames" do
+      project = GCOV::Project.new
+      project.add_files do
+        file = GCOV::File.new "myfile.cpp"
+        file.add_lines do
+          file << GCOV::Line.new(0,:none,"Source:myfile.cpp")
+          file << GCOV::Line.new(1,4,"line 1")
+          file << GCOV::Line.new(2,23,"line 2")
+          file << GCOV::Line.new(3,:none,"line 3")
+          file << GCOV::Line.new(4,:missed,"line 4")
+          file << GCOV::Line.new(5,:none,"line 5")
+        end
+
+        project << file
+
+        file = GCOV::File.new "myfile.cpp"
+        file.add_lines do
+          file << GCOV::Line.new(0,:none,"Source:myfile.cpp")
+          file << GCOV::Line.new(1,:missed,"line 1")
+          file << GCOV::Line.new(2,40,"line 2")
+          file << GCOV::Line.new(3,:none,"line 3")
+          file << GCOV::Line.new(4,:none,"line 4")
+        end
+
+        project << file
+        
+      end # add_files
+
+      expect(project.files.count).to eq(1)
+      
+    end # it
+
+  end # describe
 
   describe "#add_dir" do
     it "adds all files in the given directory" do
@@ -161,7 +194,7 @@ describe GCOV::Project do
 
         project << file
 
-        file = GCOV::File.new "myfile.cpp"
+        file = GCOV::File.new "myfile2.cpp"
         file.add_lines do
           file << GCOV::Line.new(1,:missed,"line 1")
           file << GCOV::Line.new(2,40,"line 2")

@@ -10,13 +10,28 @@ module GCOV
 
     def initialize name=""
       @name = name
-      @files = []
+      @files = {}
       @adding = false
     end
 
     def <<(file)
-      @files << file
+      if @files.has_key?file.name
+        @files[file.name].merge! file
+      else
+        @files[file.name] = file
+      end
       _update_stats unless @adding
+    end
+
+    def files
+      @files.sort{|a,b| 
+        if ::File.basename(a[0]) < ::File.basename(b[0])
+          -1
+        elsif ::File.basename(a[0]) == ::File.basename(b[0])
+          0
+        else
+          1
+        end }.map{|key,val|val}
     end
 
     def add_files &block
@@ -45,7 +60,7 @@ module GCOV
         :hits_per_line => 0
       }
 
-      @files.each do |file|
+      @files.each do |name,file|
         @stats[:missed_lines] += file.stats[:missed_lines]
         @stats[:exec_lines] += file.stats[:exec_lines]
         @stats[:total_exec] += file.stats[:total_exec]

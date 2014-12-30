@@ -22,10 +22,15 @@ module GCOV
     def initialize name
       fail "name required" unless name and name.is_a? String
       @name = name
-      @lines = []
+      @lines = {}
       @meta = {}
       @stats = {}
       _update_stats
+    end
+
+    # return lines as array, in order by number
+    def lines
+      @lines.sort.map{|key,val|val}
     end
 
     def add_lines &block
@@ -48,7 +53,7 @@ module GCOV
         :hits_per_line => 0.0
       }
 
-      @lines.each do |line|
+      @lines.each do |index,line|
         @stats[:missed_lines] += (line.state == :missed).to_i
         @stats[:exec_lines] += (line.state == :exec).to_i
         @stats[:total_exec] += (line.count.is_a?(Integer) ? line.count : 0 )
@@ -76,7 +81,7 @@ module GCOV
         key,val = /([^:]+):(.*)$/.match(line.text).to_a[1..2]
         @meta[key] = val
       else
-        @lines << line
+        @lines[line.number] = line
       end
     end
 
@@ -119,6 +124,23 @@ module GCOV
       
       result.gsub!( /(###|#|\^|\.gcov$)/, {"###"=>"/","#"=>"/","^"=>"..",".gcov"=>""} ) 
       result = ::Pathname.new(result).cleanpath.to_s
+      result
+    end
+
+    def merge! other
+      other.lines.each do |line|
+        if @lines.has_key? line.number
+          @lines[line.number].merge! line
+        else
+          @lines[line.number] = line
+        end
+      end
+      _update_stats
+    end
+
+    def merge other
+      result = self.dup
+      result.merge! other
       result
     end
 

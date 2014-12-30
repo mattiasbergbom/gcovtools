@@ -46,4 +46,48 @@ describe GCOV::Line do
 
   end
 
+  describe "#state" do
+    it "should return :exec if it has positive count" do
+      line = GCOV::Line.new 3,5,"line x"
+      expect(line.state).to eq(:exec)
+    end
+
+    it "should return :missed if it was missed" do
+      line = GCOV::Line.new 3,:missed,"line x"
+      expect(line.state).to eq(:missed)
+    end
+
+    it "should return :none if it is not relevant" do
+      line = GCOV::Line.new 3,:none,"line x"
+      expect(line.state).to eq(:none)
+    end
+  end
+
+  describe "#merge" do
+    it "should add hit counts" do
+      line = GCOV::Line.new 3,4, "abcdef"
+      line2 = GCOV::Line.new 3,1, "abcdef"
+      line3 = line.merge line2
+      expect(line3.count).to eq(5)
+
+      line = GCOV::Line.new 3,:missed, "abcdef"
+      line2 = GCOV::Line.new 3,1, "abcdef"
+      line3 = line.merge line2
+      expect(line3.count).to eq(1)
+
+      line = GCOV::Line.new 3,1, "abcdef"
+      line2 = GCOV::Line.new 3,:missed, "abcdef"
+      line3 = line.merge line2
+      expect(line3.count).to eq(1)
+    end
+
+    it "should give missed (0) presedence over none" do
+      line = GCOV::Line.new 3,:missed, "abcdef"
+      line2 = GCOV::Line.new 3,:none, "abcdef"
+      line3 = line.merge line2
+      expect(line3.count).to eq(:missed)
+    end
+
+  end # describe #merge
+
 end
