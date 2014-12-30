@@ -70,7 +70,6 @@ describe GCOV::Project do
       expect(project.files.map(&:name)).to include( "test1.cpp" )
     end
 
-
     it "should filter using given array of expressions" do
       project = GCOV::Project.new
       project.add_file(File.join(File.dirname(__FILE__),"data","test2.cpp.gcov"), :filter => [/test2\.cpp/,/test3\.cpp/])

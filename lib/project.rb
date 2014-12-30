@@ -68,39 +68,44 @@ module GCOV
 
     end
 
-    def add_dir path, hash={}
-      add_files do 
-        if hash[:recursive] == true
-          filenames = Dir["#{path}/**/*.gcov"]
-        else
-          filenames = Dir["#{path}/*.gcov"]
-        end
+    def _add_file path, hash_={}
+      hash = hash_.dup
+      
+      # legacy support
+      if !hash[:filter].nil? and ( hash[:filter].is_a? Regexp )
+        hash[:filter] = [ hash[:filter] ]
+      end
+      
+      files = GCOV::File.load(path)
 
-        # legacy support
-        if !hash[:filter].nil? and ( hash[:filter].is_a? Regexp )
-          hash[:filter] = [ hash[:filter] ]
-        end
-        
-        filenames.map{|filename| GCOV::File.load filename }.each do |files|
-          files.each do |file|
-            if hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty?
-              self << file
-            end # if
-          end # each file
-        end # each files
+      files.each do |file|
+        if hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty?
+          self << file
+        end # if
+      end #each file
+    end
+
+    def add_dir path, hash_={}
+      hash = hash_.dup
+      if hash[:recursive] == true
+        filenames = Dir["#{path}/**/*.gcov"]
+      else
+        filenames = Dir["#{path}/*.gcov"]
+      end
+
+      add_files do 
+        filenames.each do |filename|
+          _add_file filename, hash
+        end # each filename
       end # add_files
     end # #add_dir
-
-    def add_file path, hash={}
+    
+    def add_file path, hash_={}
+      hash = hash_.dup
       add_files do
-        files = GCOV::File.load(path)
-        files.each do |file|
-          if hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty?
-            self << file
-          end # if
-        end # each file
+        _add_file path, hash
       end # add_files
-    end # add_file
+    end # #add_file
 
     def self.load_dir path, hash={}
       project = GCOV::Project.new
