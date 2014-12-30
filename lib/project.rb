@@ -81,28 +81,24 @@ module GCOV
           hash[:filter] = [ hash[:filter] ]
         end
         
-        filenames.select{ |filename| 
-          hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(GCOV::File.demangle(filename) ) }.empty?  
-        }.map{|filename| GCOV::File.load filename }.each do |files|
+        filenames.map{|filename| GCOV::File.load filename }.each do |files|
           files.each do |file|
             if hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty?
               self << file
             end # if
           end # each file
-        end # each file(s)
-      end
-    end
+        end # each files
+      end # add_files
+    end # #add_dir
 
     def add_file path, hash={}
       add_files do
-        if hash[:filter].nil? or !hash[:filter].match(GCOV::File.demangle(path)) 
-          files = GCOV::File.load(path)
-          files.each do |file|
-            if hash[:filter].nil? or !hash[:filter].match( ::Pathname.new(file.meta['Source']).cleanpath.to_s )
-              self << file
-            end # if
-          end
-        end # if
+        files = GCOV::File.load(path)
+        files.each do |file|
+          if hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty?
+            self << file
+          end # if
+        end # each file
       end # add_files
     end # add_file
 
