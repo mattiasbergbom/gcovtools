@@ -7,6 +7,7 @@ require_relative '../lib/ansii_formatter'
 require_relative '../lib/xml_formatter'
 require_relative '../lib/html_formatter'
 require_relative '../lib/json_formatter'
+require_relative '../lib/version'
 
 class Util
   def Util.opt_wrap(s, width=61)
@@ -17,6 +18,10 @@ end
 class CGOV_CLI
   include Mixlib::CLI
   
+  banner "gcov2x v#{GCOV::VERSION}
+
+ Usage:"
+
   option :filter,
   :long => "--filter FILTER",
   :description => Util.opt_wrap("A semicolon-separated list of regex filters which specify which files NOT to include in the conversion. Will filter on the actual filename (replacing any mangling done by llvm-cov using #'s) as well as the 'Source' meta attribute in the GCOV data. 
