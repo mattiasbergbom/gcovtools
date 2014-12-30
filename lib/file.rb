@@ -104,6 +104,7 @@ module GCOV
           file._add_line line
         end # each line
       end# file_handle
+      file._update_stats
       files << file
       files
     end
