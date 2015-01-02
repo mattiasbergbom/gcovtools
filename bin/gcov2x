@@ -86,6 +86,8 @@ if cli.config[:verbose]
   GCOV::logger.level = Logger::INFO
 end
 
+GCOV::logger.info "gcov2x v#{GCOV::VERSION}"
+
 proj = GCOV::Project.new
 
 filter = []
@@ -111,6 +113,9 @@ filenames.each do |filename|
     proj.add_file filename, :filter => filter
   end
 end
+
+GCOV::logger.info "project has #{proj.files.count} files after filtering"
+GCOV::logger.info "#{proj.files.map(&:name).join("\n")}"
 
 case cli.config[:format]
 when :ascii then

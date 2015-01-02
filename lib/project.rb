@@ -85,7 +85,7 @@ module GCOV
     end
 
     def _add_file path, hash_={}
-      GCOV::logger.info "adding: #{path}"
+      GCOV::logger.info "parsing file: #{path}"
 
       hash = hash_.dup
       
