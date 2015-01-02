@@ -1,5 +1,6 @@
 require_relative './file'
 require_relative './line'
+require_relative './logging'
 
 module GCOV
 
@@ -93,9 +94,14 @@ module GCOV
       
       files = GCOV::File.load(path)
 
+      GCOV::logger.info "filters: #{hash[:filter]}"
+
       files.each do |file|
         if hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty?
+          GCOV::logger.info "+ adding: #{::Pathname.new(file.meta['Source']).cleanpath.to_s}"
           self << file
+        else
+          GCOV::logger.info "- skipping: #{::Pathname.new(file.meta['Source']).cleanpath.to_s}"
         end # if
       end #each file
     end

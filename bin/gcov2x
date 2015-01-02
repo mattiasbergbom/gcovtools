@@ -2,6 +2,7 @@
 
 require 'mixlib/cli'
 
+require_relative '../lib/logging'
 require_relative '../lib/gcov2x'
 require_relative '../lib/ansii_formatter'
 require_relative '../lib/xml_formatter'
@@ -59,6 +60,12 @@ Available presets:
   :on => :tail,
   :boolean => true
   
+  option :verbose,
+  :short => "-v",
+  :long => "--verbose",
+  :description => Util.opt_wrap("Verbose output"),
+  :boolean => true
+
   option :help,
   :short => "-h",
   :long => "--help",
@@ -75,17 +82,26 @@ filenames = cli.parse_options
 
 fail "Got no filename" unless filenames.is_a? Array and filenames.count > 0
 
+if cli.config[:verbose]
+  GCOV::logger.level = Logger::INFO
+end
+
+GCOV::logger.info 'hej'
+
 proj = GCOV::Project.new
 
 filter = []
-cli.config[:filter].each do |f|
-  filter <<  case f
-              when :xcode then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
-              when :linux then /\/usr\/include\//
-              when nil then nil
-              else /#{f}/
-              end
-end # f
+
+if !cli.config[:filter].nil? 
+  cli.config[:filter].each do |f|
+    filter <<  case f
+               when :xcode then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
+               when :linux then /\/usr\/include\//
+               when nil then nil
+               else /#{f}/
+               end
+  end # each f
+end
 
 filenames.each do |filename|
   if File.directory? filename
