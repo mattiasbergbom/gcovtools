@@ -86,8 +86,6 @@ if cli.config[:verbose]
   GCOV::logger.level = Logger::INFO
 end
 
-GCOV::logger.info 'hej'
-
 proj = GCOV::Project.new
 
 filter = []
