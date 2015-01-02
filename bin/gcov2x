@@ -101,7 +101,10 @@ if !cli.config[:filter].nil?
   end # each f
 end
 
+GCOV::logger.info "filter: #{filter}"
+
 filenames.each do |filename|
+  GCOV::logger.info "processing: #{filename}"
   if File.directory? filename
     proj.add_dir filename, :recursive => cli.config[:recursive], :filter => filter
   elsif File.file? filename

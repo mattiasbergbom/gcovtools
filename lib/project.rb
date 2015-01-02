@@ -85,6 +85,8 @@ module GCOV
     end
 
     def _add_file path, hash_={}
+      GCOV::logger.info "adding: #{path}"
+
       hash = hash_.dup
       
       # legacy support
@@ -107,12 +109,15 @@ module GCOV
     end
 
     def add_dir path, hash_={}
+      GCOV::logger.info "searching: #{path}"
       hash = hash_.dup
       if hash[:recursive] == true
         filenames = Dir["#{path}/**/*.gcov"]
       else
         filenames = Dir["#{path}/*.gcov"]
       end
+
+      GCOV::logger.info "found: #{filenames}"
 
       add_files do 
         filenames.each do |filename|
