@@ -1,44 +1,44 @@
 require_relative '../spec_helper'
 
-describe GCOV::Line do
+describe GCOVTOOLS::Line do
   describe "#number" do
     it "returns the number it was given" do
-      line = GCOV::Line.new 2, 4, "abcdef"
+      line = GCOVTOOLS::Line.new 2, 4, "abcdef"
       expect(line.number).to eq(2)
     end
   end
 
   describe "#count" do
     it "returns the count it was given" do
-      line = GCOV::Line.new 2, 4, "abcdef"
+      line = GCOVTOOLS::Line.new 2, 4, "abcdef"
       expect(line.count).to eq(4)
     end
   end
 
   describe "#text" do
     it "returns the text it was given" do
-      line = GCOV::Line.new 2, 4, "abcdef"
+      line = GCOVTOOLS::Line.new 2, 4, "abcdef"
       expect(line.text).to eq("abcdef")
     end
   end
 
   describe ".parse" do
     it "parses gcov format line with count" do
-      line = GCOV::Line.parse "        2:   55:  std::string StringUtil::ltrim( const std::string &s ) "
+      line = GCOVTOOLS::Line.parse "        2:   55:  std::string StringUtil::ltrim( const std::string &s ) "
       expect(line.number).to eq(55)
       expect(line.count).to eq(2)
       expect(line.text).to eq("  std::string StringUtil::ltrim( const std::string &s ) ")
     end
 
     it "parses empty gcov format line" do
-      line = GCOV::Line.parse "        -:   35:   * don't worry about excessive copying."
+      line = GCOVTOOLS::Line.parse "        -:   35:   * don't worry about excessive copying."
       expect(line.number).to eq(35)
       expect(line.count).to eq(:none)
       expect(line.text).to eq("   * don't worry about excessive copying.")
     end
 
     it "parses missed gcov format line" do
-      line = GCOV::Line.parse "    #####:   89:  }  "
+      line = GCOVTOOLS::Line.parse "    #####:   89:  }  "
       expect(line.number).to eq(89)
       expect(line.count).to eq(:missed)
       expect(line.text).to eq("  }  ")
@@ -48,42 +48,42 @@ describe GCOV::Line do
 
   describe "#state" do
     it "should return :exec if it has positive count" do
-      line = GCOV::Line.new 3,5,"line x"
+      line = GCOVTOOLS::Line.new 3,5,"line x"
       expect(line.state).to eq(:exec)
     end
 
     it "should return :missed if it was missed" do
-      line = GCOV::Line.new 3,:missed,"line x"
+      line = GCOVTOOLS::Line.new 3,:missed,"line x"
       expect(line.state).to eq(:missed)
     end
 
     it "should return :none if it is not relevant" do
-      line = GCOV::Line.new 3,:none,"line x"
+      line = GCOVTOOLS::Line.new 3,:none,"line x"
       expect(line.state).to eq(:none)
     end
   end
 
   describe "#merge" do
     it "should add hit counts" do
-      line = GCOV::Line.new 3,4, "abcdef"
-      line2 = GCOV::Line.new 3,1, "abcdef"
+      line = GCOVTOOLS::Line.new 3,4, "abcdef"
+      line2 = GCOVTOOLS::Line.new 3,1, "abcdef"
       line3 = line.merge line2
       expect(line3.count).to eq(5)
 
-      line = GCOV::Line.new 3,:missed, "abcdef"
-      line2 = GCOV::Line.new 3,1, "abcdef"
+      line = GCOVTOOLS::Line.new 3,:missed, "abcdef"
+      line2 = GCOVTOOLS::Line.new 3,1, "abcdef"
       line3 = line.merge line2
       expect(line3.count).to eq(1)
 
-      line = GCOV::Line.new 3,1, "abcdef"
-      line2 = GCOV::Line.new 3,:missed, "abcdef"
+      line = GCOVTOOLS::Line.new 3,1, "abcdef"
+      line2 = GCOVTOOLS::Line.new 3,:missed, "abcdef"
       line3 = line.merge line2
       expect(line3.count).to eq(1)
     end
 
     it "should give missed (0) presedence over none" do
-      line = GCOV::Line.new 3,:missed, "abcdef"
-      line2 = GCOV::Line.new 3,:none, "abcdef"
+      line = GCOVTOOLS::Line.new 3,:missed, "abcdef"
+      line2 = GCOVTOOLS::Line.new 3,:none, "abcdef"
       line3 = line.merge line2
       expect(line3.count).to eq(:missed)
     end
