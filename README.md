@@ -1,9 +1,9 @@
-gcov2x
+gcovtools
 ======
 
-![Travis CI Status](https://travis-ci.org/mattiasbergbom/gcov2x.svg)
+![Travis CI Status](https://travis-ci.org/mattiasbergbom/gcovtools.svg)
 
-**gcov2x** takes coverage data emitted from [llvm-cov](http://llvm.org/docs/CommandGuide/llvm-cov.html) and aggregates it into various formats, some more easily interpreted by humans, some better suited for machines.
+**gcovtools** provides various tools and utilities for processing coverage data emitted from [llvm-cov](http://llvm.org/docs/CommandGuide/llvm-cov.html).
 
 Quick Start
 -----------
@@ -12,13 +12,13 @@ First, unless you haven't already done so, compile your project using ```clang -
 
 Next, install the gem:
 
-```gem install gcov2x```
+```gem install gcovtools```
 
-This should furnish you with a ```gcov2x``` executable in your path.
+This should furnish you with a ```gcovtools``` executable in your path.
 
-Finally, execute ```gcov2x``` in one of multiple possible ways. For instance, generate a HTML coverage report:
+Finally, execute ```gcovtools``` in one of multiple possible ways. For instance, generate a HTML coverage report:
 
-```gcov2x --format html *.gcov > coverage.html```
+```gcovtools convert --format html *.gcov > coverage.html```
 
 Disclaimer
 ----------
