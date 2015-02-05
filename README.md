@@ -30,7 +30,7 @@ Applying a few filters to only include certain source files once extracted from 
 
 ```gcovtools report --format html ../some/dir -r --include subdir/.*\.cpp$ otherdir/.*\.h$ --exclude \.s\.cpp$ > coverage.html```
 
-That last bit will include all files ending with ```.cpp``` anywhere under some directory named ```subdir```, all files ending with ```.h``` anywhere under some directory named ```otherdir``, but will exclude any file ending with ```.s.cpp``` (which is how someone may name, say, behavioral specification drivers).
+That last bit will include all files ending with ```.cpp``` anywhere under some directory named ```subdir```, all files ending with ```.h``` anywhere under some directory named ```otherdir```, but will exclude any file ending with ```.s.cpp``` (which is how someone may name, say, behavioral specification drivers).
 
 Disclaimer
 ----------
