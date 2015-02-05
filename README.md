@@ -16,9 +16,21 @@ Next, install the gem:
 
 This should furnish you with a ```gcovtools``` executable in your path.
 
-Finally, execute ```gcovtools``` in one of multiple possible ways. For instance, generate a HTML coverage report:
+Finally, execute ```gcovtools``` in one of multiple possible ways. 
 
-```gcovtools convert --format html *.gcov > coverage.html```
+For instance, generate a HTML coverage report and pipe it to ```coverage.html```:
+
+```gcovtools report --format html *.gcov > coverage.html```
+
+Ditto using recursive directory search:
+
+```gcovtools report --format html ../some/dir -r > coverage.html```
+
+Applying a few filters to only include certain source files once extracted from the gcov files, using regular expressions:
+
+```gcovtools report --format html ../some/dir -r --include subdir/.*\.cpp$ otherdir/.*\.h$ --exclude \.s\.cpp$ > coverage.html```
+
+That last bit will include all files ending with ```.cpp``` anywhere under some directory named ```subdir```, all files ending with ```.h``` anywhere under some directory named ```otherdir``, but will exclude any file ending with ```.s.cpp``` (which is how someone may name, say, behavioral specification drivers).
 
 Disclaimer
 ----------
