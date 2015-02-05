@@ -1,3 +1,3 @@
-module GCOV
+module GCOVTOOLS
   VERSION = '0.5.6'
 end

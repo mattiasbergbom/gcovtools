@@ -1,0 +1,118 @@
+#!/usr/bin/env ruby
+
+require "thor"
+require 'mixlib/cli'
+
+require_relative '../lib/logging'
+require_relative '../lib/gcovtools'
+require_relative '../lib/ansii_formatter'
+require_relative '../lib/xml_formatter'
+require_relative '../lib/html_formatter'
+require_relative '../lib/json_formatter'
+require_relative '../lib/version'
+
+class Util
+  def Util.opt_wrap(s, width=61)
+    s.gsub(/(.{1,#{width}})(\s+|\Z)/, "\\1\n                                       # ")
+  end
+end
+ 
+class MyCLI < Thor
+
+  class_option :verbose, :type => :boolean, :desc => "Be verbose"
+  desc "report FILES", "generate a coverage report from one or more gcov FILES"
+
+  method_option :recursive, :type => :boolean, :desc => "Search for input files recursively in the directory/ies specified."
+  
+  method_option :filter,
+  :desc => ::Util.opt_wrap("A list of regex filters which specify which files NOT to include in the report. Will filter on the actual filename (taking into account any path mangling done by llvm-cov) as well as the 'Source' meta attribute in the GCOVTOOLS data. 
+Available presets:
+:xcode - Xcode system headers
+:linux - Linux system headers
+"),
+  :type => :array
+
+  method_option :format,
+  :aliases => "-f",
+  :desc => ::Util.opt_wrap("The output format (ascii, html, xml, json)"),
+  :default => "ascii"
+  
+  method_option :css,
+  :aliases => "-c",
+  :desc => ::Util.opt_wrap("CSS file to reference in HTML output.")
+
+  method_option :xsl,
+  :aliases => "-x",
+  :desc => ::Util.opt_wrap("XSL file to reference in XML output.")
+
+  method_option :recursive,
+  :aliases => "-r",
+  :desc => ::Util.opt_wrap("Recursively load all .gcov files in the given directory"),
+  :type => :boolean
+  
+  method_option :verbose,
+  :aliases => "-v",
+  :desc => ::Util.opt_wrap("Verbose output"),
+  :type => :boolean
+
+  def report(*filenames)
+
+    fail "Got no filename" unless filenames
+
+    if options[:verbose]
+      GCOVTOOLS::logger.level = Logger::INFO
+    end
+
+    GCOVTOOLS::logger.info "gcovtools v#{GCOVTOOLS::VERSION}"
+
+    proj = GCOVTOOLS::Project.new
+
+    filter = []
+
+    STDERR.puts "filter: #{options[:filter]}"
+    if !options[:filter].nil? 
+      options[:filter].each do |f|
+        filter <<  case f
+                   when ":xcode" then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
+                   when ":linux" then /\/usr\/include\//
+                   when nil then nil
+                   else /#{f}/
+                   end
+      end # each f
+    end
+
+    GCOVTOOLS::logger.info "filter: #{filter}"
+
+    filenames.each do |filename|
+      GCOVTOOLS::logger.info "processing: #{filename}"
+      if File.directory? filename
+        proj.add_dir filename, :recursive => options[:recursive], :filter => filter
+      elsif File.file? filename
+        proj.add_file filename, :filter => filter
+      end
+    end
+
+    GCOVTOOLS::logger.info "project has #{proj.files.count} files after filtering"
+    GCOVTOOLS::logger.info "#{proj.files.map(&:name).join("\n")}"
+
+    case options[:format].to_sym
+    when :ascii then
+      formatter = GCOVTOOLS::ANSIIFormatter.new proj
+      formatter.print
+    when :html then
+      formatter = GCOVTOOLS::HTMLFormatter.new( proj, :css => options[:css] )
+      formatter.print
+    when :xml then
+      formatter = GCOVTOOLS::XMLFormatter.new( proj, :xsl => options[:xsl] )
+      formatter.print
+    when :json then
+      formatter = GCOVTOOLS::JSONFormatter.new proj
+      formatter.print
+    else
+      fail "Invalid output format: #{options[:format]}"
+    end
+  end
+
+end
+
+MyCLI.start(ARGV)

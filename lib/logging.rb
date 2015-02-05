@@ -1,6 +1,6 @@
 require 'logger'
 
-module GCOV
+module GCOVTOOLS
 
   @@logger = Logger.new(STDERR)
   @@logger.level = Logger::WARN

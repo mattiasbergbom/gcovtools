@@ -13,7 +13,7 @@ class FalseClass
   end
 end
 
-module GCOV
+module GCOVTOOLS
 
   class File
 
@@ -95,7 +95,7 @@ module GCOV
       file = nil
       ::File.open(filename, "r") do |file_handle|
         file_handle.each_line do |line_|
-          line = GCOV::Line.parse(line_)
+          line = GCOVTOOLS::Line.parse(line_)
           if line.number == 0
             key,val = /([^:]+):(.*)$/.match(line.text).to_a[1..2]
             if key == 'Source'
@@ -103,7 +103,7 @@ module GCOV
                 file._update_stats
                 files << file
               end # if
-              file = GCOV::File.new val
+              file = GCOVTOOLS::File.new val
             end # if source
           end # if line == 0
           file._add_line line
