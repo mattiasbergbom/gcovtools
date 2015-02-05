@@ -24,13 +24,26 @@ class MyCLI < Thor
 
   method_option :recursive, :type => :boolean, :desc => "Search for input files recursively in the directory/ies specified."
   
-  method_option :filter,
-  :desc => ::Util.opt_wrap("A list of regex filters which specify which files NOT to include in the report. Will filter on the actual filename (taking into account any path mangling done by llvm-cov) as well as the 'Source' meta attribute in the GCOVTOOLS data. 
+  method_option :include,
+  :desc => ::Util.opt_wrap("A list of regex filters which specify which files to include in the report. Will filter on the actual filename (taking into account any path mangling done by llvm-cov) as well as the 'Source' meta attribute in the GCOVTOOLS data. 
 Available presets:
 :xcode - Xcode system headers
 :linux - Linux system headers
 "),
   :type => :array
+
+  method_option :exclude,
+  :desc => ::Util.opt_wrap("A list of regex filters which specify which files NOT to include in the report. Will filter on the actual filename (taking into account any path mangling done by llvm-cov) as well as the 'Source' meta attribute in the GCOVTOOLS data. The filters will be applied in the order inclusive-exclusive, where an empty/unspecified filter means to include all files encountered.
+
+Available presets:
+:xcode - Xcode system headers
+:linux - Linux system headers
+"),
+  :type => :array
+
+  method_option :inclusive,
+  :desc => ::Util.opt_wrap("Filter inclusively instead of exclusively (which is the default)."),
+  :type => :boolean
 
   method_option :format,
   :aliases => "-f",
@@ -55,6 +68,9 @@ Available presets:
   :desc => ::Util.opt_wrap("Verbose output"),
   :type => :boolean
 
+  # --------------------------------------------------------------------------------------- #
+  # Generate report
+  # --------------------------------------------------------------------------------------- #
   def report(*filenames)
 
     fail "Got no filename" unless filenames
@@ -67,28 +83,32 @@ Available presets:
 
     proj = GCOVTOOLS::Project.new
 
-    filter = []
+    filter = { 
+      :include => [],
+      :exclude => [] 
+    }
 
-    STDERR.puts "filter: #{options[:filter]}"
-    if !options[:filter].nil? 
-      options[:filter].each do |f|
-        filter <<  case f
-                   when ":xcode" then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
-                   when ":linux" then /\/usr\/include\//
-                   when nil then nil
-                   else /#{f}/
-                   end
-      end # each f
+    [:include,:exclude].each do |verb|
+
+      if !options[verb].nil? 
+        options[verb].each do |f|
+          filter[verb] <<  case f
+                           when ":xcode" then /Developer\/(Toolchains|Platforms)\/.*\/usr\/include\//
+                           when ":linux" then /\/usr\/include\//
+                           when nil then nil
+                           else /#{f}/
+                           end
+        end # each f
+      end
+      GCOVTOOLS::logger.info "#{verb.to_s}: #{filter[verb]}"
     end
-
-    GCOVTOOLS::logger.info "filter: #{filter}"
 
     filenames.each do |filename|
       GCOVTOOLS::logger.info "processing: #{filename}"
       if File.directory? filename
-        proj.add_dir filename, :recursive => options[:recursive], :filter => filter
+        proj.add_dir filename, :recursive => options[:recursive], :include => filter[:include], :exclude => filter[:exclude]
       elsif File.file? filename
-        proj.add_file filename, :filter => filter
+        proj.add_file filename, :include => filter[:include], :exclude => filter[:exclude]
       end
     end
 

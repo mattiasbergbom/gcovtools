@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+# require_relative '../lib/logging'
+# GCOVTOOLS::logger.level = Logger::INFO
+
 require 'simplecov'
 SimpleCov.start
 

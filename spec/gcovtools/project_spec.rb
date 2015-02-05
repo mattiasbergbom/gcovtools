@@ -72,13 +72,13 @@ describe GCOVTOOLS::Project do
 
     it "should filter using given array of expressions" do
       project = GCOVTOOLS::Project.new
-      project.add_file(File.join(File.dirname(__FILE__),"data","test2.cpp.gcov"), :filter => [/test2\.cpp/,/test3\.cpp/])
+      project.add_file(File.join(File.dirname(__FILE__),"data","test2.cpp.gcov"), :exclude => [/test2\.cpp/,/test3\.cpp/])
       expect(project.files.count).to eq(0)
     end
 
     it "should filter out concatenated files that match the filter" do
       project = GCOVTOOLS::Project.new
-      project.add_file(File.join(File.dirname(__FILE__),"concat","test_cat.cpp.gcov"), :filter => [/test\.cpp$/])
+      project.add_file(File.join(File.dirname(__FILE__),"concat","test_cat.cpp.gcov"), :exclude => [/test\.cpp$/])
       expect(project.files.count).to eq(1)
       expect(project.files.map(&:name)).not_to include( a_string_ending_with("test.cpp") )
       expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
@@ -86,10 +86,34 @@ describe GCOVTOOLS::Project do
 
     it "should not filter out concatenated files that don't match the filter" do
       project = GCOVTOOLS::Project.new
-      project.add_file(File.join(File.dirname(__FILE__),"concat","test_cat.cpp.gcov"), :filter => [/test_cat\.cpp\.gcov$/])
+      project.add_file(File.join(File.dirname(__FILE__),"concat","test_cat.cpp.gcov"), :exclude => [/test_cat\.cpp\.gcov$/])
       expect(project.files.count).to eq(2)
       expect(project.files.map(&:name)).to include( a_string_ending_with("test.cpp") )
       expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
+    end
+
+    it "should filter inclusively if told to" do
+      project = GCOVTOOLS::Project.new
+      project.add_file(File.join(File.dirname(__FILE__),"concat","test_cat.cpp.gcov"), :include => [/test\.cpp$/] )
+      expect(project.files.count).to eq(1)
+      expect(project.files.map(&:name)).not_to include( a_string_ending_with("test1.cpp") )
+      expect(project.files.map(&:name)).to include( a_string_ending_with("test.cpp") )
+    end
+
+    it "should apply all inclusive filters" do
+      project = GCOVTOOLS::Project.new
+      project.add_file(File.join(File.dirname(__FILE__),"concat","test_cat.cpp.gcov"), :include => [/test\.cpp$/,/test1\.cpp$/] )
+      expect(project.files.count).to eq(2)
+      expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
+      expect(project.files.map(&:name)).to include( a_string_ending_with("test.cpp") )
+    end
+
+    it "should apply exclusive filters after inclusive ones" do
+      project = GCOVTOOLS::Project.new
+      project.add_file(File.join(File.dirname(__FILE__),"concat","test_cat.cpp.gcov"), :include => [/test.*\.cpp$/], :exclude => [/test.cpp/] )
+      expect(project.files.count).to eq(1)
+      expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
+      expect(project.files.map(&:name)).not_to include( a_string_ending_with("test.cpp") )
     end
 
     it "should merge file stats for identical filenames" do
@@ -145,7 +169,7 @@ describe GCOVTOOLS::Project do
 
     it "filters using given singular expression" do
       project = GCOVTOOLS::Project.new
-      project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true, :filter => /test2\.cpp/)
+      project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true, :exclude => [/test2\.cpp/])
       expect(project.files.count).to eq(3)
       expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test2.cpp") )
       expect(project.files.map{|file|file.name}).to include( a_string_ending_with("test3.cpp") )
@@ -153,7 +177,7 @@ describe GCOVTOOLS::Project do
 
     it "filters using given array of expressions" do
       project = GCOVTOOLS::Project.new
-      project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true, :filter => [/test2\.cpp/,/test3\.cpp/])
+      project.add_dir(File.join(File.dirname(__FILE__),"data"), :recursive => true, :exclude => [/test2\.cpp/,/test3\.cpp/])
       expect(project.files.count).to eq(2)
       expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test2.cpp") )
       expect(project.files.map{|file|file.name}).not_to include( a_string_ending_with("test3.cpp") )
@@ -161,7 +185,7 @@ describe GCOVTOOLS::Project do
 
     it "should filter out concatenated files that match the filter" do
       project = GCOVTOOLS::Project.new
-      project.add_dir(File.join(File.dirname(__FILE__),"concat"), :recursive => true, :filter => [/test\.cpp$/])
+      project.add_dir(File.join(File.dirname(__FILE__),"concat"), :recursive => true, :exclude => [/test\.cpp$/])
       expect(project.files.count).to eq(1)
       expect(project.files.map(&:name)).not_to include( a_string_ending_with("test.cpp") )
       expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
@@ -169,10 +193,34 @@ describe GCOVTOOLS::Project do
 
     it "should not filter out concatenated files that don't match the filter" do
       project = GCOVTOOLS::Project.new
-      project.add_dir(File.join(File.dirname(__FILE__),"concat"), :recursive => true, :filter => [/test_cat\.cpp/])
+      project.add_dir(File.join(File.dirname(__FILE__),"concat"), :recursive => true, :exclude => [/test_cat\.cpp/])
       expect(project.files.count).to eq(2)
       expect(project.files.map(&:name)).to include( a_string_ending_with("test.cpp") )
       expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
+    end
+
+    it "should filter inclusively if told to" do
+      project = GCOVTOOLS::Project.new
+      project.add_dir(File.join(File.dirname(__FILE__),"concat"), :recursive => true, :include => [/test\.cpp/])
+      expect(project.files.count).to eq(1)
+      expect(project.files.map(&:name)).not_to include( a_string_ending_with("test1.cpp") )
+      expect(project.files.map(&:name)).to include( a_string_ending_with("test.cpp") )
+    end
+
+    it "should apply all inclusive filters" do
+      project = GCOVTOOLS::Project.new
+      project.add_dir(File.join(File.dirname(__FILE__),"concat"), :recursive => true, :include => [/test\.cpp$/,/test1\.cpp$/] )
+      expect(project.files.count).to eq(2)
+      expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
+      expect(project.files.map(&:name)).to include( a_string_ending_with("test.cpp") )
+    end
+
+    it "should apply exclusive filters after inclusive ones" do
+      project = GCOVTOOLS::Project.new
+      project.add_dir(File.join(File.dirname(__FILE__),"concat"), :recursive => true, :include => [/test.*\.cpp$/], :exclude => [/test.cpp/] )
+      expect(project.files.count).to eq(1)
+      expect(project.files.map(&:name)).to include( a_string_ending_with("test1.cpp") )
+      expect(project.files.map(&:name)).not_to include( a_string_ending_with("test.cpp") )
     end
 
   end

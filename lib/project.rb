@@ -89,23 +89,26 @@ module GCOVTOOLS
 
       hash = hash_.dup
       
-      # legacy support
-      if !hash[:filter].nil? and ( hash[:filter].is_a? Regexp )
-        hash[:filter] = [ hash[:filter] ]
-      end
-      
       files = GCOVTOOLS::File.load(path)
 
-      GCOVTOOLS::logger.info "filters: #{hash[:filter]}"
+      # apply _inclusive_ filters first
+      files.select!{ |file| 
+        hash[:include].nil? or hash[:include].empty? or !hash[:include].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty? 
+      }
 
-      files.each do |file|
-        if hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty?
-          GCOVTOOLS::logger.info "+ adding: #{::Pathname.new(file.meta['Source']).cleanpath.to_s}"
-          self << file
-        else
-          GCOVTOOLS::logger.info "- skipping: #{::Pathname.new(file.meta['Source']).cleanpath.to_s}"
-        end # if
-      end #each file
+      GCOVTOOLS::logger.info "included #{files.size} files"
+
+      old_size = files.size
+
+      # apply _exclusive_ filters next
+      files.select!{ |file| 
+        hash[:exclude].nil? or hash[:exclude].empty? or hash[:exclude].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty? 
+      }
+
+      GCOVTOOLS::logger.info "excluded #{old_size-files.size} files"
+
+      # add all the files that survived the gauntlet
+      files.map{ |file| self << file }
     end
 
     def add_dir path, hash_={}
