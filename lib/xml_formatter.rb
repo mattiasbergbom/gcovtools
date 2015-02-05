@@ -6,7 +6,7 @@ require_relative './line'
 # require 'gyoku'
 require 'builder'
 
-module GCOV
+module GCOVTOOLS
   
   class XMLFormatter
     
@@ -55,4 +55,4 @@ module GCOV
 
   end # XMLFormatter
 
-end # GCOV
+end # GCOVTOOLS

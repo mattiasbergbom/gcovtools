@@ -5,7 +5,7 @@ require_relative './project'
 require_relative './file'
 require_relative './line'
 
-module GCOV
+module GCOVTOOLS
   
   class ANSIIFormatter
     

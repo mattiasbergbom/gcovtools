@@ -5,7 +5,7 @@ require_relative './line'
 
 require 'json'
 
-module GCOV
+module GCOVTOOLSTOOLS
   
   class JSONFormatter
     
@@ -40,4 +40,4 @@ module GCOV
 
   end # JSONFormatter
 
-end # GCOV
+end # GCOVTOOLSTOOLS

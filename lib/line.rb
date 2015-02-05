@@ -1,5 +1,5 @@
 
-module GCOV
+module GCOVTOOLS
 
   class Line
 
@@ -29,7 +29,7 @@ module GCOV
               when "#####" then :missed
               else count.to_i
               end
-      GCOV::Line.new number,count,text
+      GCOVTOOLS::Line.new number,count,text
     end
 
     def merge! other

@@ -2,7 +2,7 @@ require_relative './file'
 require_relative './line'
 require_relative './logging'
 
-module GCOV
+module GCOVTOOLS
 
   class Project
     
@@ -85,7 +85,7 @@ module GCOV
     end
 
     def _add_file path, hash_={}
-      GCOV::logger.info "parsing file: #{path}"
+      GCOVTOOLS::logger.info "parsing file: #{path}"
 
       hash = hash_.dup
       
@@ -94,22 +94,22 @@ module GCOV
         hash[:filter] = [ hash[:filter] ]
       end
       
-      files = GCOV::File.load(path)
+      files = GCOVTOOLS::File.load(path)
 
-      GCOV::logger.info "filters: #{hash[:filter]}"
+      GCOVTOOLS::logger.info "filters: #{hash[:filter]}"
 
       files.each do |file|
         if hash[:filter].nil? or hash[:filter].empty? or hash[:filter].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty?
-          GCOV::logger.info "+ adding: #{::Pathname.new(file.meta['Source']).cleanpath.to_s}"
+          GCOVTOOLS::logger.info "+ adding: #{::Pathname.new(file.meta['Source']).cleanpath.to_s}"
           self << file
         else
-          GCOV::logger.info "- skipping: #{::Pathname.new(file.meta['Source']).cleanpath.to_s}"
+          GCOVTOOLS::logger.info "- skipping: #{::Pathname.new(file.meta['Source']).cleanpath.to_s}"
         end # if
       end #each file
     end
 
     def add_dir path, hash_={}
-      GCOV::logger.info "searching: #{path}"
+      GCOVTOOLS::logger.info "searching: #{path}"
       hash = hash_.dup
       if hash[:recursive] == true
         filenames = Dir["#{path}/**/*.gcov"]
@@ -117,7 +117,7 @@ module GCOV
         filenames = Dir["#{path}/*.gcov"]
       end
 
-      GCOV::logger.info "found: #{filenames}"
+      GCOVTOOLS::logger.info "found: #{filenames}"
 
       add_files do 
         filenames.each do |filename|
@@ -134,7 +134,7 @@ module GCOV
     end # #add_file
 
     def self.load_dir path, hash={}
-      project = GCOV::Project.new
+      project = GCOVTOOLS::Project.new
       project.add_dir path, hash
       project
     end

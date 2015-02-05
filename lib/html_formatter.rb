@@ -6,7 +6,7 @@ require_relative './line'
 require 'erb'
 require 'cgi'
 
-module GCOV
+module GCOVTOOLS
   
   class HTMLFormatter
     
@@ -81,4 +81,4 @@ EOF
 
   end # HTMLFormatter
 
-end # GCOV
+end # GCOVTOOLS
