@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require "thor"
-require 'mixlib/cli'
 
 require_relative '../lib/logging'
 require_relative '../lib/gcovtools'
