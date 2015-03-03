@@ -15,14 +15,14 @@ Gem::Specification.new do |gem|
   gem.license     = 'MIT'
   gem.required_ruby_version = '>= 2.0'
 
-  gem.add_development_dependency 'rspec', '~> 3.1.0'
-  gem.add_development_dependency 'rake', '~> 10.4.2'
-  gem.add_development_dependency 'rubygems-tasks', '~> 0.2.4'
-  gem.add_development_dependency 'simplecov', '~> 0.9.1'
+  gem.add_development_dependency 'rspec', '~> 3.1', '>= 3.1.0'
+  gem.add_development_dependency 'rake', '~> 10.4', '>= 10.4.2'
+  gem.add_development_dependency 'rubygems-tasks', '~> 0.2', '>= 0.2.4'
+  gem.add_development_dependency 'simplecov', '~> 0.9', '>= 0.9.1'
   
-  gem.add_runtime_dependency 'terminal-table', '~> 1.4.5'
-  gem.add_runtime_dependency 'term-ansicolor', '~> 1.3.0'
-  gem.add_runtime_dependency 'thor', '~> 0.19.1'
+  gem.add_runtime_dependency 'terminal-table', '~> 1.4', '>= 1.4.5'
+  gem.add_runtime_dependency 'term-ansicolor', '~> 1.3', '>= 1.3.0'
+  gem.add_runtime_dependency 'thor', '~> 0.19', '>= 0.19.1'
   gem.add_runtime_dependency 'gyoku', '~> 1.0'
 
 end
