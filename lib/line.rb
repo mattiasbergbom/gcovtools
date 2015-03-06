@@ -29,6 +29,7 @@ module GCOVTOOLS
               when "#####" then :missed
               else count.to_i
               end
+      count = :none if count == :missed and text.strip == "}"
       GCOVTOOLS::Line.new number,count,text
     end
 
