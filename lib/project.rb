@@ -85,7 +85,7 @@ module GCOVTOOLS
     end
 
     def _add_file path, hash_={}
-      GCOVTOOLS::logger.info "parsing file: #{path}"
+      GCOVTOOLS::logger.debug "parsing file: #{path}"
 
       hash = hash_.dup
       
@@ -96,7 +96,7 @@ module GCOVTOOLS
         hash[:include].nil? or hash[:include].empty? or !hash[:include].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty? 
       }
 
-      GCOVTOOLS::logger.info "included #{files.size} files"
+      GCOVTOOLS::logger.debug "included #{files.size} files"
 
       old_size = files.size
 
@@ -105,14 +105,14 @@ module GCOVTOOLS
         hash[:exclude].nil? or hash[:exclude].empty? or hash[:exclude].select{|f| f.match(::Pathname.new(file.meta['Source']).cleanpath.to_s) }.empty? 
       }
 
-      GCOVTOOLS::logger.info "excluded #{old_size-files.size} files"
+      GCOVTOOLS::logger.debug "excluded #{old_size-files.size} files"
 
       # add all the files that survived the gauntlet
       files.map{ |file| self << file }
     end
 
     def add_dir path, hash_={}
-      GCOVTOOLS::logger.info "searching: #{path}"
+      GCOVTOOLS::logger.debug "searching: #{path}"
       hash = hash_.dup
       if hash[:recursive] == true
         filenames = Dir["#{path}/**/*.gcov"]
@@ -120,7 +120,7 @@ module GCOVTOOLS
         filenames = Dir["#{path}/*.gcov"]
       end
 
-      GCOVTOOLS::logger.info "found: #{filenames}"
+      GCOVTOOLS::logger.debug "found: #{filenames}"
 
       add_files do 
         filenames.each do |filename|
