@@ -81,6 +81,27 @@ describe GCOVTOOLS::Line do
       expect(line.count).to eq(:none)
       expect(line.text).to eq("};                                  ")
     end
+
+
+    it "should ignore missed closing brace with semicolon and inline comment" do
+      line = GCOVTOOLS::Line.parse "    #####:   1:}; // class Foo"
+      expect(line.number).to eq(1)
+      expect(line.count).to eq(:none)
+      expect(line.text).to eq("}; // class Foo")
+      line = GCOVTOOLS::Line.parse "    #####:   89:    }; //class Foo  "
+      expect(line.number).to eq(89)
+      expect(line.count).to eq(:none)
+      expect(line.text).to eq("    }; //class Foo  ")
+      line = GCOVTOOLS::Line.parse "    #####:   999:                                    }; // class Foo"
+      expect(line.number).to eq(999)
+      expect(line.count).to eq(:none)
+      expect(line.text).to eq("                                    }; // class Foo")
+      line = GCOVTOOLS::Line.parse "    #####:   5:};                 // class Foo                 "
+      expect(line.number).to eq(5)
+      expect(line.count).to eq(:none)
+      expect(line.text).to eq("};                 // class Foo                 ")
+    end
+
   end
 
   describe "#state" do

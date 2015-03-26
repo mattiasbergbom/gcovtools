@@ -19,6 +19,13 @@ module GCOVTOOLS
       end
     end
 
+    def self.closing_brace_patterns
+      [
+       /^}[ ;]*$/, # brace followed by any number of spaces and semi-colons (methods/classes/closures)
+       /^}[ ;]*\/\/.*$/, # brace + [semicolon(s)] + inline comment (e.g. end of class/method)
+      ]
+    end
+
     def self.parse line
       match = /^[ ]*([0-9]+|-|#####):[ ]*([0-9]+):(.*)/.match(line)
       fail "Invalid line: #{line}" unless match.to_a.count == 4
@@ -29,7 +36,8 @@ module GCOVTOOLS
               when "#####" then :missed
               else count.to_i
               end
-      count = :none if count == :missed and ["}","};"].count(text.strip) == 1
+ 
+      count = :none if count == :missed and Line.closing_brace_patterns.select{|re| re.match(text.strip) }.count > 0
       GCOVTOOLS::Line.new number,count,text
     end
 
